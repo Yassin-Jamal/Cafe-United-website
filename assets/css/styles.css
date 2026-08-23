@@ -1,0 +1,716 @@
+/* ============================================================
+   CAFÉ UNITED — Bergweg 199A, Rotterdam
+   Palette from the logo: orange CAFÉ, green UNITED, cream ground.
+   Layout: full-bleed hero, parallax reel sections, ROTTERDAM footer.
+   ============================================================ */
+
+/* ---------- 1. Tokens ---------- */
+:root {
+  --cream:      #FFF8EC;
+  --cream-2:    #FCEFD9;
+  --sand:       #F5E5C8;
+  --white:      #FFFFFF;
+
+  --orange:      #F58634;   /* logo orange — fills only */
+  --orange-soft: #FFD9B0;
+  --orange-deep: #A85210;   /* text-safe (5.3:1 on cream) */
+
+  --green:       #8CC63F;   /* logo green — fills only */
+  --green-mid:   #6FAE2F;
+  --green-deep:  #3E6B22;   /* text-safe (6.0:1 on cream) */
+  --green-dark:  #2E5218;
+  --green-soft:  #E7F2D6;
+  --green-wash:  #EFF6E4;   /* one step lighter than green-soft, so white cards
+                               and their green-soft headers still read on it */
+
+  --yellow:     #FFC845;
+
+  --ink:        #26301D;
+  --ink-soft:   #5A6650;
+  --line:       rgba(62, 107, 34, .18);   /* decorative hairlines */
+  --line-field: #7E8B73;                  /* form borders — 3.6:1 on white */
+
+  --ff-display: 'Fredoka', 'Baloo 2', 'Nunito Sans', system-ui, sans-serif;
+  --ff-body:    'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --wrap:        1180px;
+  --wrap-narrow: 720px;
+  --gutter:      clamp(20px, 5vw, 56px);
+  --sec-y:       clamp(60px, 8vw, 110px);
+  --header-h:    76px;
+
+  --radius:   18px;
+  --radius-s: 12px;
+  --shadow:   0 14px 34px rgba(62, 107, 34, .10);
+  --shadow-lg:0 24px 60px rgba(62, 107, 34, .16);
+  --ease: cubic-bezier(.22, .61, .36, 1);
+}
+
+/* ---------- 2. Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 12px);
+  -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0; background: var(--cream); color: var(--ink);
+  font-family: var(--ff-body); font-size: clamp(15.5px, .5vw + 14px, 17px);
+  line-height: 1.7; overflow-x: hidden; -webkit-font-smoothing: antialiased;
+}
+body.is-locked { overflow: hidden; }
+
+img, svg, video { max-width: 100%; display: block; }
+h1, h2, h3, h4 { font-family: var(--ff-display); font-weight: 600; line-height: 1.12; margin: 0 0 .55em; }
+p { margin: 0 0 1.1em; }
+a { color: var(--green-deep); }
+
+.skip-link { position: absolute; left: -9999px; top: 0; z-index: 200;
+  background: var(--green-deep); color: #fff; padding: 12px 20px; font-weight: 700; }
+.skip-link:focus { left: 12px; top: 12px; }
+
+.wrap { width: 100%; max-width: var(--wrap); margin-inline: auto; padding-inline: var(--gutter); }
+.wrap--narrow { max-width: var(--wrap-narrow); }
+
+.section { position: relative; padding-block: var(--sec-y); }
+.section--tint  { background: var(--cream-2); }
+.section--green { background: var(--green-soft); }
+.section--wash  { background: var(--green-wash); }
+
+.center { text-align: center; }
+.lede { font-size: 1.12em; color: var(--ink-soft); }
+.muted { color: var(--ink-soft); }
+
+/* ---------- 3. Brand ---------- */
+.brand { display: inline-flex; align-items: baseline; gap: .28em; text-decoration: none;
+  font-family: var(--ff-display); font-weight: 600; line-height: 1; white-space: nowrap; }
+.brand__cafe   { color: var(--orange); }
+.brand__united { color: var(--green-mid); }
+.brand--header { font-size: 1.6rem; }
+
+.logo-img { height: 46px; width: auto; }
+.logo-img--hero { height: clamp(120px, 22vw, 210px); margin-inline: auto; }
+
+.eyebrow { font-family: var(--ff-body); font-size: .76rem; font-weight: 800;
+  letter-spacing: .22em; text-transform: uppercase; color: var(--orange-deep); margin-bottom: .9em; }
+.title { font-size: clamp(1.9rem, 4.4vw, 3rem); color: var(--green-deep); }
+.title--sm { font-size: clamp(1.4rem, 2.8vw, 1.9rem); }
+
+/* the signature two-word lockup with a wide gap */
+.title--split { text-transform: uppercase; letter-spacing: .1em; line-height: 1.05; }
+.title--split span { display: block; }
+.title--lower { text-transform: lowercase; }
+
+/* ---------- 4. Buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5em;
+  font-family: var(--ff-display); font-size: 1rem; font-weight: 600; line-height: 1;
+  padding: 15px 28px; border-radius: 999px; border: 2px solid transparent;
+  text-decoration: none; cursor: pointer; white-space: nowrap;
+  transition: transform .2s var(--ease), background-color .25s var(--ease),
+              color .25s var(--ease), border-color .25s var(--ease);
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0); }
+.btn--primary { background: var(--green-deep); color: #fff; box-shadow: 0 8px 20px rgba(62,107,34,.28); }
+.btn--primary:hover { background: var(--green-dark); }
+/* ink on orange = 5.4:1; white would only be 2.5:1, so never white here */
+.btn--accent { background: var(--orange); color: var(--ink); box-shadow: 0 8px 20px rgba(245,134,52,.32); }
+.btn--accent:hover { background: #ff9748; }
+.btn--ghost { border-color: var(--green-deep); color: var(--green-deep); background: transparent; }
+.btn--ghost:hover { background: var(--green-deep); color: #fff; }
+.btn--sm { padding: 10px 18px; font-size: .88rem; }
+.btn-row { display: flex; gap: 14px; flex-wrap: wrap; }
+.btn-row--center { justify-content: center; }
+
+/* ---------- 5. Header ---------- */
+.site-header {
+  position: fixed; inset: 0 0 auto 0; z-index: 90;
+  background-color: transparent;
+  transition: background-color .35s var(--ease), box-shadow .35s var(--ease);
+}
+.site-header.is-stuck {
+  background-color: rgba(255, 248, 236, .94);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 20px rgba(62, 107, 34, .12);
+}
+.site-header--solid { background-color: rgba(255,248,236,.94); backdrop-filter: blur(12px);
+  box-shadow: 0 2px 20px rgba(62,107,34,.12); }
+
+/* full-bleed on purpose: the burger sits hard left and the CTAs hard right,
+   rather than tucked inside the 1180px content column */
+.site-header__inner { width: 100%; padding: 0 clamp(16px, 2.6vw, 40px);
+  height: var(--header-h); display: flex; align-items: center; gap: clamp(10px, 2.5vw, 22px); }
+.site-header__logo { margin-right: auto; text-decoration: none; min-width: 0; display: flex; align-items: center; }
+.site-header .burger, .site-header__inner > .btn { flex: none; }
+.header-cta { display: flex; align-items: center; gap: 10px; }
+
+.burger { background: none; border: 0; padding: 10px; margin-left: -10px;
+  cursor: pointer; color: var(--green-deep); flex: none; }
+.burger__box { display: block; width: 26px; }
+.burger__bar { display: block; height: 2.5px; background: currentColor; border-radius: 2px;
+  transition: transform .35s var(--ease), opacity .25s var(--ease); }
+.burger__bar + .burger__bar { margin-top: 6px; }
+.burger[aria-expanded="true"] .burger__bar:nth-child(1) { transform: translateY(8.5px) rotate(45deg); }
+.burger[aria-expanded="true"] .burger__bar:nth-child(2) { opacity: 0; }
+.burger[aria-expanded="true"] .burger__bar:nth-child(3) { transform: translateY(-8.5px) rotate(-45deg); }
+
+/* ---------- 6. Palms ---------- */
+.palm-band {
+  position: absolute; left: 0; right: 0; bottom: 0; height: clamp(120px, 18vw, 230px);
+  background-image: url("../img/palm-horizon.svg");
+  background-repeat: repeat-x; background-position: center bottom; background-size: auto 100%;
+  opacity: .38; pointer-events: none;
+}
+.palm-band--soft { opacity: .18; }
+
+/* Stationary tiled wallpaper. data-parallax="1" pins it to the viewport centre
+   so it holds still while the section scrolls over it (see main.js). Sized to
+   the viewport and centred on the section so a pinned layer always covers the
+   screen; the extra 34vh/34vw is the margin the -11deg rotation needs. */
+.has-wallpaper { position: relative; overflow: hidden; isolation: isolate; }
+.wallpaper {
+  position: absolute; left: 50%; top: 50%;
+  width:  calc(100vw + 34vh); height: calc(100vh + 34vw);
+  margin-left: calc(-50vw - 17vh); margin-top: calc(-50vh - 17vw);
+  z-index: 0;
+  background-image: url("../img/palm-pattern.svg");
+  background-repeat: repeat; background-size: 300px auto;
+  opacity: .13;
+  transform: translate3d(0, var(--py, 0px), 0) rotate(-11deg);
+  transform-origin: center; pointer-events: none; will-change: transform;
+}
+.has-wallpaper > .wrap { position: relative; z-index: 1; }
+
+.divider { height: 2px; margin-inline: var(--gutter);
+  background-image: radial-gradient(circle, var(--line) 1.2px, transparent 1.3px);
+  background-size: 12px 2px; background-repeat: repeat-x; background-position: center; }
+
+/* ---------- 7. Hero ---------- */
+.hero {
+  position: relative; overflow: hidden; isolation: isolate;
+  min-height: 100svh; display: grid; place-items: center; text-align: center;
+  padding: calc(var(--header-h) + 40px) var(--gutter) clamp(150px, 20vw, 260px);
+  background: radial-gradient(120% 82% at 50% 4%, #FFFDF7 0%, var(--cream) 48%, #FDF1DF 100%);
+}
+/* kept as a soft warm lift behind the logo, not a spotlight */
+.hero__sun {
+  position: absolute; left: 50%; top: 6%; transform: translateX(-50%);
+  width: min(66vw, 620px); aspect-ratio: 1; border-radius: 50%; z-index: -3;
+  background: radial-gradient(circle, rgba(255,200,69,.17) 0%, rgba(245,134,52,.06) 46%, transparent 72%);
+  filter: blur(10px);
+}
+/* three depth layers, each parallaxing at its own rate */
+.hero__layer {
+  position: absolute; inset: -14% -12% -22% -12%; z-index: -2;
+  background-image: url("../img/palm-pattern.svg"); background-repeat: repeat;
+  transform: translate3d(0, var(--py, 0px), 0);
+  will-change: transform; pointer-events: none;
+}
+.hero__layer--far  { background-size: 210px auto; opacity: .07; filter: blur(1px); }
+.hero__layer--mid  { background-size: 320px auto; background-position: 90px 40px; opacity: .09; }
+.hero__layer--near { background-size: 480px auto; background-position: -60px 110px; opacity: .11; }
+
+.hero__content { max-width: 800px; position: relative; z-index: 2; }
+.hero__tag { font-family: var(--ff-body); font-weight: 800; font-size: .8rem;
+  letter-spacing: .28em; text-transform: uppercase; color: var(--orange-deep); margin-bottom: 1.4em; }
+.hero__sub { font-family: var(--ff-display); font-size: clamp(1.05rem, 2.4vw, 1.5rem);
+  color: var(--green-deep); margin: .6em 0 .5em; }
+.hero__lead { color: var(--ink-soft); max-width: 52ch; margin-inline: auto; margin-bottom: 2em; }
+
+.hero__scroll { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%);
+  width: 24px; height: 46px; display: grid; place-items: start center; z-index: 2; }
+.hero__scroll span { width: 2px; height: 100%; border-radius: 2px;
+  background: linear-gradient(180deg, var(--green-deep), transparent);
+  animation: scrollCue 2.1s var(--ease) infinite; transform-origin: top; }
+@keyframes scrollCue {
+  0% { transform: scaleY(0); opacity: 0; } 35% { opacity: 1; } 100% { transform: scaleY(1); opacity: 0; }
+}
+
+/* ---------- 8. Info strip ---------- */
+.strip { background: var(--green-deep); color: #fff; }
+.strip__inner { display: flex; flex-wrap: wrap; gap: 10px clamp(18px, 4vw, 48px);
+  align-items: center; justify-content: center; padding-block: 16px; font-size: .95rem; text-align: center; }
+.strip a { color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,.45); }
+.strip a:hover { border-bottom-color: #fff; }
+.strip__item { display: inline-flex; align-items: center; gap: .5em; }
+
+.badge { display: inline-flex; align-items: center; gap: .5em; font-weight: 800;
+  font-size: .82rem; letter-spacing: .04em; padding: 5px 13px; border-radius: 999px; }
+.badge__dot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; flex: none; }
+.badge--open   { background: #DFF3C4; color: #2E5218; }
+.badge--closed { background: #FFE0D2; color: #8E3410; }
+
+/* ---------- 9. Feature rows (text + reel) ---------- */
+.feature { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 76px); align-items: center; }
+.feature__text { max-width: 54ch; }
+.feature__media { display: grid; place-items: center; }
+.feature--flip .feature__media { order: -1; }
+.feature__kicker { font-family: var(--ff-display); font-size: 1.35rem; color: var(--orange-deep);
+  line-height: 1.35; margin-bottom: 1.2em; }
+
+/* 9:16 vertical reel */
+.reel { position: relative; width: min(100%, 330px); aspect-ratio: 9 / 16;
+  border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-lg);
+  background: var(--green-soft); }
+.reel video, .reel img { width: 100%; height: 100%; object-fit: cover; }
+.reel__badge { position: absolute; left: 12px; top: 12px; font-size: .64rem; letter-spacing: .22em;
+  text-transform: uppercase; color: #fff; background: rgba(38,48,29,.5); backdrop-filter: blur(4px);
+  padding: 5px 10px; border-radius: 999px; }
+.reel__sound {
+  position: absolute; right: 10px; bottom: 10px; width: 40px; height: 40px; border-radius: 50%;
+  border: 0; cursor: pointer; display: grid; place-items: center; color: #fff;
+  background: rgba(38,48,29,.5); backdrop-filter: blur(4px);
+  transition: background-color .2s var(--ease);
+}
+.reel__sound:hover { background: rgba(38,48,29,.75); }
+.reel__sound svg { width: 20px; height: 20px; }
+/* empty slot, ready for a clip */
+.reel--placeholder { display: grid; place-items: center; text-align: center; padding: 24px;
+  border: 2px dashed var(--line-field); background: var(--green-soft); }
+.reel--placeholder p { color: var(--ink-soft); font-size: .9rem; margin: 0; }
+
+/* ---------- 10. Cards / events ---------- */
+.grid { display: grid; gap: clamp(16px, 2.4vw, 26px); }
+.grid--2 { grid-template-columns: repeat(2, 1fr); }
+.grid--3 { grid-template-columns: repeat(3, 1fr); }
+
+/* Reserveren: form + info cards + a portrait reel beside them. Three columns
+   only once there is room; below that the reel drops under the cards. */
+.res-grid { display: grid; gap: clamp(16px, 2.4vw, 26px); grid-template-columns: 1.45fr 1fr;
+  align-items: start; }
+.res-aside { display: grid; gap: 20px; align-items: start; }
+.res-invite h3 { margin: 0 0 8px; }
+.res-invite p { color: var(--ink-soft); font-size: .95rem; margin: 0 0 16px; }
+@media (min-width: 1024px) {
+  .res-grid { grid-template-columns: 1.35fr .95fr .8fr; }
+}
+@media (min-width: 621px) and (max-width: 1023px) {
+  /* two columns: keep the reel under the info cards, not under the form */
+  .res-invite { grid-column: 2; }
+}
+@media (max-width: 620px) {
+  .res-grid { grid-template-columns: 1fr; }
+}
+
+.card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: clamp(20px, 2.6vw, 30px); box-shadow: var(--shadow);
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+  display: flex; flex-direction: column; }
+.card--hover:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+.card h3 { color: var(--green-deep); }
+.card__icon { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center;
+  background: var(--green-soft); color: var(--green-deep); margin-bottom: 16px; flex: none;
+  font-family: var(--ff-display); font-weight: 600; }
+
+.ecard { padding: 0; overflow: hidden; }
+.ecard__top { padding: 18px 22px; background: var(--green-soft); border-bottom: 1px solid var(--line); }
+.ecard__day { font-family: var(--ff-display); font-size: 1.02rem; font-weight: 600; color: var(--green-deep); }
+.ecard__time { font-size: .86rem; color: var(--ink-soft); }
+.ecard__body { padding: 20px 22px 24px; display: flex; flex-direction: column; flex: 1; }
+.ecard__body h3 { font-size: 1.18rem; margin-bottom: .35em; }
+.ecard__body p { font-size: .93rem; color: var(--ink-soft); flex: 1; }
+/* One recurring night, so the card sits centred instead of in a three-up grid. */
+.ecard-solo { max-width: 420px; margin-inline: auto; }
+.ecard-solo .btn-row { margin-top: 1.2em; }
+.tag { display: inline-block; font-size: .72rem; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 999px;
+  background: var(--orange-soft);
+  /* not --orange-deep: at 11.5px bold this counts as small text, and
+     #A85210 on --orange-soft is only 4.05:1. #8F4409 takes it to 5.3:1. */
+  color: #8F4409; margin-bottom: 12px; align-self: flex-start; }
+
+/* ---------- 11. Opening hours ---------- */
+.hours { width: 100%; border-collapse: collapse; font-size: .98rem; }
+.hours th { text-align: left; font-family: var(--ff-display); font-weight: 500; color: var(--ink);
+  padding: 11px 0; border-bottom: 1px dotted var(--line); font-size: 1rem; }
+.hours td { text-align: right; padding: 11px 0; border-bottom: 1px dotted var(--line);
+  color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.hours tr:last-child th, .hours tr:last-child td { border-bottom: 0; }
+.hours tr.is-today th, .hours tr.is-today td { color: var(--orange-deep); font-weight: 700; }
+.hours .is-closed { color: #9A5B44; }
+
+/* ---------- 12. Menu tabs ---------- */
+.menu-tabs { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 2.6em; }
+.menu-tabs button {
+  font-family: var(--ff-display); font-size: .95rem; font-weight: 500; cursor: pointer;
+  padding: 11px 22px; border-radius: 999px; background: var(--white);
+  border: 1.5px solid var(--line); color: var(--green-deep);
+  transition: background-color .2s var(--ease), color .2s var(--ease), border-color .2s var(--ease);
+}
+.menu-tabs button:hover { border-color: var(--green-mid); }
+.menu-tabs button[aria-selected="true"] { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
+.menu-tabs button span { display: block; font-family: var(--ff-body); font-size: .72rem;
+  font-weight: 700; letter-spacing: .06em; opacity: .75; margin-top: 2px; }
+
+.menu-panel[hidden] { display: none; }
+.menu-panel__head { text-align: center; margin-bottom: 2em; }
+.menu-panel__head h2 { color: var(--green-deep); font-size: clamp(1.6rem, 3.6vw, 2.4rem); margin-bottom: .2em; }
+.menu-panel__head p { color: var(--ink-soft); margin: 0; }
+
+.menu-list { list-style: none; margin: 0; padding: 0; display: grid;
+  grid-template-columns: repeat(2, 1fr); gap: 4px clamp(28px, 5vw, 60px); }
+.menu-item { display: flex; align-items: baseline; gap: 10px; padding: 12px 0;
+  border-bottom: 1px dotted var(--line); }
+.menu-item__name { font-family: var(--ff-display); font-weight: 500; font-size: 1.02rem; }
+.menu-item__desc { display: block; font-family: var(--ff-body); font-weight: 400;
+  font-size: .86rem; color: var(--ink-soft); line-height: 1.5; }
+.menu-item__dots { flex: 1; height: 1px; border-bottom: 1px dotted var(--line); transform: translateY(-3px); }
+.menu-item__price { font-family: var(--ff-display); font-weight: 600; color: var(--orange-deep);
+  font-variant-numeric: tabular-nums; }
+
+
+/* A panel with no price list: the kitchen changes daily, so it points at the
+   socials instead of listing dishes. */
+.menu-note { max-width: 58ch; margin-inline: auto; text-align: center;
+  background: var(--white); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: clamp(22px, 3vw, 34px); box-shadow: var(--shadow); }
+.menu-note p { color: var(--ink-soft); }
+.menu-note p + p { margin-top: .6em; }
+.menu-note .btn-row { margin-top: 1.4em; }
+
+/* Kitchen closes half an hour before the bar does — called out, not buried. */
+.kitchen-note { display: inline-block; max-width: 52ch; margin-inline: auto;
+  background: var(--orange-soft); border: 1px dashed var(--orange);
+  border-radius: var(--radius-s); padding: 14px 20px;
+  color: var(--ink); font-size: .95rem; }
+.kitchen-note strong { color: var(--orange-deep); }
+/* ---------- 13. Forms ---------- */
+.form { display: grid; gap: 18px; }
+.form--2col { grid-template-columns: 1fr 1fr; }
+.field { display: grid; gap: 6px; }
+.field--full { grid-column: 1 / -1; }
+.field > label { font-family: var(--ff-display); font-weight: 500; font-size: .95rem; color: var(--ink); }
+.field .hint { font-size: .82rem; color: var(--ink-soft); }
+.field .hint--warn { color: var(--orange-deep); font-weight: 600; }
+.field input, .field select, .field textarea {
+  font-family: var(--ff-body); font-size: 1rem; color: var(--ink);
+  /* the card behind is also white, so this border is the only thing marking
+     where a field is — it needs to be a real boundary, not a hairline */
+  background: var(--white); border: 1.5px solid var(--line-field); border-radius: var(--radius-s);
+  padding: 13px 15px; width: 100%; transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
+}
+/* pointer focus only — a bare :focus here outranks :focus-visible and would
+   strip the keyboard ring too */
+.field input:focus:not(:focus-visible),
+.field select:focus:not(:focus-visible),
+.field textarea:focus:not(:focus-visible) {
+  outline: none; border-color: var(--green-deep); box-shadow: 0 0 0 4px rgba(140,198,63,.22);
+}
+.field textarea { resize: vertical; min-height: 120px; }
+.form__note { font-size: .88rem; color: var(--ink-soft); }
+.form__status { padding: 14px 16px; border-radius: var(--radius-s); font-size: .94rem; display: none; }
+.form__status.is-shown { display: block; }
+.form__status--ok  { background: var(--green-soft); color: var(--green-dark); }
+.form__status--err { background: #FFE0D2; color: #8E3410; }
+.req { color: var(--orange-deep); }
+
+/* ---------- 14. Footer ---------- */
+.site-footer { position: relative; background: var(--green-deep); color: #fff; overflow: hidden;
+  padding-top: clamp(56px, 7vw, 96px); }
+.site-footer a { color: #fff; }
+
+/* The giant ROTTERDAM sitting behind the details. Three things keep it from
+   fighting the text: a thinner, fainter stroke, a slight downward shift so its
+   busiest part sits under the whitespace rather than the logo, and a scrim
+   layered between it and the content (see .site-footer::after). */
+.site-footer__wordmark {
+  position: absolute; left: 50%; top: clamp(44px, 7vw, 96px); transform: translateX(-50%);
+  font-family: var(--ff-display); font-weight: 700;
+  font-size: clamp(3.4rem, 15vw, 13rem); letter-spacing: .04em; line-height: 1;
+  color: transparent; -webkit-text-stroke: 1.2px rgba(231, 242, 214, .30);
+  white-space: nowrap; pointer-events: none; user-select: none; z-index: 0;
+}
+/* Firefox without -webkit-text-stroke would render a solid slab, so only go
+   transparent where the stroke is actually supported */
+@supports not (-webkit-text-stroke: 1px red) {
+  .site-footer__wordmark { color: rgba(231,242,214,.14); -webkit-text-stroke: 0; }
+}
+/* Scrim between the wordmark and the content. It is the SAME green as the
+   footer, so it leaves the background untouched and only mutes the letters —
+   which is exactly the knob needed: the wordmark stays visible, but the
+   address and hours no longer have to compete with it. */
+.site-footer::after {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: rgba(62, 107, 34, .42);
+}
+
+.site-footer__grid { position: relative; z-index: 2;
+  display: grid; grid-template-columns: 1.25fr 1fr 1fr; gap: clamp(26px, 4vw, 56px);
+  padding-bottom: clamp(36px, 5vw, 60px); }
+.site-footer h4 { font-size: .8rem; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--green-soft); margin-bottom: 1.1em; font-family: var(--ff-body); font-weight: 800; }
+.site-footer p, .site-footer li { color: rgba(255,255,255,.88); font-size: .95rem; }
+.site-footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.site-footer ul a { text-decoration: none; opacity: .88; }
+.site-footer ul a:hover { opacity: 1; text-decoration: underline; }
+.site-footer address { font-style: normal; line-height: 1.9; }
+.site-footer .logo-img { height: 62px; margin-bottom: 14px; }
+
+.footer-hours { display: grid; grid-template-columns: auto auto; gap: 4px 14px; font-size: .92rem; }
+.footer-hours dt { color: rgba(255,255,255,.88); }
+.footer-hours dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.footer-kitchen { margin: 12px 0 0; font-size: .85rem; color: rgba(255,255,255,.78); }
+
+.site-footer__bar { position: relative; z-index: 2; border-top: 1px solid rgba(255,255,255,.18);
+  padding-block: 15px; }
+.site-footer__bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 20px;
+  justify-content: space-between; align-items: center; }
+.site-footer__bar p { margin: 0; font-size: .85rem; color: rgba(255,255,255,.88); }
+
+.footer-social { margin: 14px 0 0; }
+.footer-social a { display: inline-flex; align-items: center; gap: .55em; font-size: .92rem;
+  text-decoration: none; }
+.footer-social a:hover { text-decoration: underline; }
+.footer-social svg { width: 20px; height: 20px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 1.6; }
+
+/* KvK/BTW: real numbers, so they read as plain text — the dotted "fill me in"
+   rule that used to sit here is gone. */
+.site-footer__num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ---------- 15. Page header (subpages) ---------- */
+.page-head { position: relative; overflow: hidden; isolation: isolate;
+  padding: calc(var(--header-h) + clamp(40px, 6vw, 72px)) var(--gutter) clamp(48px, 7vw, 88px);
+  text-align: center; background: linear-gradient(180deg, #FFFDF7 0%, var(--cream-2) 100%); }
+.page-head h1 { font-size: clamp(2.1rem, 6vw, 3.6rem); color: var(--green-deep); margin-bottom: .25em; }
+.page-head p { color: var(--ink-soft); max-width: 56ch; margin-inline: auto; }
+.crumbs { font-size: .84rem; color: var(--ink-soft); margin-bottom: 1em; }
+.crumbs a { color: var(--ink-soft); text-decoration: none; }
+.crumbs a:hover { color: var(--orange-deep); text-decoration: underline; }
+
+/* ---------- 16. Side drawer nav ---------- */
+.panel { position: fixed; inset: 0; z-index: 120; }
+.panel[hidden] { display: none; }
+/* One veil across the whole viewport — the drawer is not a separate panel,
+   it is just the column the menu sits in. .84 is the floor: opened while
+   scrolled over the dark green footer, that is what keeps even the small
+   ghost button at 4.67:1. The colour alone carries it, so no blur support
+   is required; the blur is a bonus where it exists. */
+.panel__backdrop {
+  position: absolute; inset: 0;
+  background: rgba(255, 248, 236, .84);
+  -webkit-backdrop-filter: blur(20px) saturate(1.1);
+  backdrop-filter: blur(20px) saturate(1.1);
+  opacity: 0; transition: opacity .35s var(--ease);
+}
+.panel.is-open .panel__backdrop { opacity: 1; }
+
+/* Transparent: the veil above is the background. Only the menu items on top
+   are opaque. Keeping the transform means they still slide in from the left. */
+.panel__body {
+  position: absolute; inset: 0 auto 0 0;
+  width: min(440px, 88vw);
+  overflow-y: auto; overflow-x: hidden;
+  display: flex; flex-direction: column;
+  padding: clamp(26px, 4vh, 44px) clamp(30px, 5vw, 48px) 40px clamp(34px, 6vw, 68px);
+  background: none;
+  transform: translateX(-100%);
+  transition: transform .42s var(--ease);
+}
+.panel.is-open .panel__body { transform: none; }
+.panel__body:focus { outline: none; }
+/* no palm texture here on purpose — the page's own palms already show through
+   the veil, and a second layer on top of them just muddies it */
+
+.panel__head { display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; margin-bottom: clamp(20px, 4vh, 36px); }
+.panel__head .logo-img { height: 40px; }
+.panel__close { background: none; border: 0; font-family: var(--ff-display); font-size: .95rem;
+  color: var(--green-deep); cursor: pointer; padding: 8px; }
+
+.panel__nav { display: flex; flex-direction: column; gap: 2px; }
+.panel__nav a { font-family: var(--ff-display); font-size: clamp(1.5rem, 5vw, 2rem);
+  font-weight: 500; text-decoration: none; color: var(--green-deep); padding: 7px 0;
+  width: fit-content; transition: color .2s var(--ease), transform .2s var(--ease); }
+.panel__nav a:hover { color: var(--orange-deep); transform: translateX(8px); }
+.panel__nav a[aria-current="page"] { color: var(--orange-deep); }
+.panel__foot { margin-top: auto; padding-top: 2em; display: grid; gap: 12px; justify-items: start; }
+.panel__foot .btn { width: 100%; }
+
+/* ---------- 17. Reveal ----------
+   Opt-in, gated on the .js class set in <head>: content is visible by default,
+   so a failure to load main.js costs the animation, not the page. */
+.js .reveal { opacity: 0; transform: translateY(22px);
+  transition: opacity .7s var(--ease), transform .7s var(--ease); }
+.js .reveal.is-in { opacity: 1; transform: none; }
+
+/* ---------- 18. Responsive ---------- */
+
+/* ---------- contact page: one narrow left-aligned column ----------
+   Mirrors the reference layout — details stacked straight above the form
+   rather than split into two cards side by side. */
+.contact-col { max-width: 600px; margin: 0 auto; }
+.contact-title { font-family: var(--ff-display); font-weight: 600;
+  font-size: clamp(2.4rem, 7vw, 3.75rem); line-height: 1.05; color: var(--green-deep);
+  text-transform: uppercase; letter-spacing: .01em; margin: 0 0 .5em; }
+.contact-brand { font-family: var(--ff-display); font-weight: 600; text-transform: uppercase;
+  letter-spacing: .12em; font-size: .95rem; color: var(--ink); margin: 0 0 1.1em; }
+
+.contact-list { list-style: none; margin: 0 0 2.2em; padding: 0; display: grid; gap: 15px; }
+.contact-list li { display: grid; grid-template-columns: 24px 1fr; gap: 15px; align-items: start; }
+.contact-list svg { width: 22px; height: 22px; fill: none; stroke: var(--green-deep);
+  stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; margin-top: 3px; }
+.contact-list a { color: var(--ink); text-decoration: none; border-bottom: 1px solid transparent; }
+.contact-list a:hover { color: var(--green-deep); border-bottom-color: currentColor; }
+
+.contact-block { margin: 0 0 2.2em; }
+.contact-sub { font-family: var(--ff-display); font-weight: 600; text-transform: uppercase;
+  letter-spacing: .12em; font-size: .95rem; color: var(--ink); margin: 0 0 .8em; }
+.contact-note { color: var(--ink-soft); margin: 0 0 2em; }
+
+/* fieldset needs its UA border/padding stripped, and display:block because a
+   grid fieldset renders its legend unpredictably across browsers */
+.field--set { display: block; border: 0; padding: 0; margin: 0; min-width: 0; }
+.field--set > legend { font-family: var(--ff-display); font-weight: 500; font-size: .95rem;
+  color: var(--ink); padding: 0; margin-bottom: 10px; }
+.radio-row { display: flex; flex-wrap: wrap; gap: 10px 26px; }
+.radio { display: inline-flex; align-items: center; gap: 9px; cursor: pointer; color: var(--ink-soft); }
+.radio input { width: 18px; height: 18px; accent-color: var(--green-deep); margin: 0; cursor: pointer; }
+
+.btn--block { width: 100%; justify-content: center; }
+
+/* ---------- application flow (vacatures) ----------
+   One question per screen, after the reference site's hiring widget. Steps are
+   plain fieldsets: with JS off every one is visible and the form still submits
+   top-to-bottom, so the .js hook below is what turns it into a wizard. */
+/* .btn is display:inline-flex and .apply__head display:flex — author rules beat
+   the UA [hidden] rule, so without this the hidden buttons and chrome stay visible */
+.apply [hidden] { display: none !important; }
+
+.apply { max-width: 680px; margin-inline: auto; background: var(--white);
+  border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-lg);
+  padding: clamp(22px, 4vw, 38px); }
+
+.apply__head { display: flex; align-items: center; gap: 16px; min-height: 28px; margin-bottom: 12px; }
+.apply__prev { background: none; border: 0; padding: 4px 2px; cursor: pointer;
+  font-family: var(--ff-body); font-size: .92rem; color: var(--ink-soft); }
+.apply__prev:hover { color: var(--green-deep); }
+.apply__eta { margin-left: auto; font-size: .86rem; color: var(--ink-soft); }
+
+.apply__bar { height: 6px; border-radius: 999px; background: var(--green-soft); overflow: hidden; }
+.apply__bar > span { display: block; height: 100%; width: 0; border-radius: 999px;
+  background: linear-gradient(90deg, var(--green-mid), var(--green)); transition: width .4s var(--ease); }
+.apply__count { margin: 10px 0 0; font-size: .8rem; color: var(--ink-soft); }
+
+/* fieldset reset — these are grouping semantics, not a visible box */
+.apply__step { border: 0; padding: 0; margin: 24px 0 0; min-width: 0; }
+.apply__legend { display: block; float: left; width: 100%; padding: 0; margin-bottom: 1.1em; }
+.apply__legend + * { clear: both; }
+.apply__lead { display: block; font-family: var(--ff-display); font-weight: 500;
+  font-size: clamp(1.15rem, 3.2vw, 1.42rem); color: var(--ink-soft); }
+.apply__q { display: block; font-family: var(--ff-display); font-weight: 600; line-height: 1.25;
+  font-size: clamp(1.35rem, 4vw, 1.8rem); color: var(--green-deep); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 10px; }
+/* focusable but invisible: the label is the visible control, so the ring in
+   :focus-visible below has to be drawn on the label instead */
+.chip__input { position: absolute; width: 1px; height: 1px; opacity: 0; margin: 0; pointer-events: none; }
+.chip { display: inline-flex; align-items: center; cursor: pointer; background: var(--white);
+  font-family: var(--ff-display); font-weight: 500; font-size: .96rem; color: var(--ink);
+  border: 1.5px solid var(--line-field); border-radius: 999px; padding: 11px 20px;
+  transition: background .18s var(--ease), color .18s var(--ease),
+              border-color .18s var(--ease), transform .18s var(--ease); }
+.chip:hover { border-color: var(--green-deep); color: var(--green-deep); transform: translateY(-2px); }
+.chip__input:checked + .chip { background: var(--green-deep); border-color: var(--green-deep); color: #fff; }
+.chip__input:focus-visible + .chip { outline: 3px solid var(--orange-deep); outline-offset: 2px; }
+
+.apply__fields { display: grid; gap: 16px; }
+.apply__fields input, .apply__fields textarea { max-width: 420px; }
+.apply__reveal { margin-top: 18px; }
+.apply__opt { font-weight: 400; color: var(--ink-soft); }
+
+.apply__err { margin: 14px 0 0; font-size: .9rem; color: #8E3410; display: none; }
+.apply__err.is-shown { display: block; }
+
+.apply__summary { display: grid; grid-template-columns: auto 1fr; gap: 8px 18px; font-size: .94rem;
+  margin: 0 0 22px; padding: 16px 18px; background: var(--green-wash); border-radius: var(--radius-s); }
+.apply__summary dt { font-family: var(--ff-display); font-weight: 500; color: var(--green-deep); }
+.apply__summary dd { margin: 0; color: var(--ink-soft); }
+
+.apply__foot { margin-top: 26px; }
+.apply__note { margin: 20px 0 0; font-size: .88rem; color: var(--ink-soft); }
+.apply .form__status { margin-top: 18px; }
+
+/* the wizard proper — only once scripting is confirmed */
+.js .apply__step { display: none; }
+.js .apply__step.is-active { display: block; }
+.js .apply__reveal { display: none; }
+.js .apply__reveal.is-shown { display: block; }
+
+@media (max-width: 900px) {
+  :root { --header-h: 68px; }
+  .grid--3 { grid-template-columns: repeat(2, 1fr); }
+  .site-footer__grid { grid-template-columns: 1fr 1fr; }
+  .menu-list { grid-template-columns: 1fr; }
+  .form--2col { grid-template-columns: 1fr; }
+  .feature { grid-template-columns: 1fr; }
+  .feature__text { max-width: none; }
+  /* stacked, every row reads text-then-media so the heading introduces its own
+     media. Selected with .feature--flip to outrank the order:-1 base rule —
+     media queries add no specificity. */
+  .feature--flip .feature__text  { order: 0; }
+  .feature--flip .feature__media { order: 1; }
+}
+@media (max-width: 620px) {
+  .grid--2, .grid--3 { grid-template-columns: 1fr; }
+  .site-footer__grid { grid-template-columns: 1fr; }
+  .btn-row .btn { width: 100%; }
+  .strip__inner { flex-direction: column; gap: 8px; }
+  .header-cta .btn--ghost { display: none; }
+}
+@media (max-width: 400px) {
+  .site-header__inner { gap: 8px; padding-inline: 14px; }
+  .logo-img { height: 36px; }
+  .header-cta .btn--sm { padding: 9px 13px; font-size: .8rem; }
+  .burger { padding: 8px; margin-left: -8px; }
+}
+
+/* ---------- 19. Motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important; animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  .js .reveal { opacity: 1; transform: none; }
+  /* zero the parallax offset but keep the -11deg tilt */
+  .wallpaper, .hero__layer { --py: 0px !important; }
+}
+
+/* ---------- 20. Focus (must be last) ----------
+   Placed last so it out-ranks the later .btn box-shadows and .field:focus
+   rules. Two-tone on purpose: the site has very light grounds AND the dark
+   green strip/footer, and no single colour clears 3:1 on both. */
+:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px var(--cream);
+  border-radius: 4px;
+}
+.strip :focus-visible, .site-footer :focus-visible {
+  outline-color: var(--cream);
+  box-shadow: 0 0 0 3px var(--green-dark);
+}
+.field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible {
+  outline: 3px solid var(--green-deep);   /* on white; --orange would be 2.5:1 */
+  outline-offset: 2px; border-color: var(--green-deep); box-shadow: none;
+}
+
+/* ---------- 21. Print ---------- */
+@media print {
+  .site-header, .panel, .palm-band, .wallpaper, .hero__layer, .hero__sun,
+  .hero__scroll, .menu-tabs, .skip-link, .reel { display: none !important; }
+  body { background: #fff; color: #000; }
+  /* browsers drop background colours when printing, so anything relying on a
+     dark fill prints white-on-white — and the footer holds the address */
+  .strip, .strip *, .site-footer, .site-footer * {
+    background: transparent !important; color: #000 !important;
+  }
+  .site-footer { overflow: visible; }
+  .site-footer__wordmark { display: none !important; }
+  .btn { display: none !important; }
+  .btn[href^="tel:"] { display: inline !important; padding: 0 !important;
+    border: 0 !important; color: #000 !important; }
+  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: .85em; }
+  .card { box-shadow: none; border: 1px solid #999; break-inside: avoid; }
+}

@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="340" viewBox="0 0 1800 340">
+  <!-- Horizon band of mixed palms on a shared baseline (y=340); the faded group
+       sits behind the solid one for depth. Masked and tinted by CSS. -->
+  <defs>
+    <g id="ha" fill="#3E6B22">
+      <path d="M94,280 C99,215 95,155 86,104 L98,101 C106,155 108,216 108,280 Z"/>
+      <g transform="translate(92,100)">
+        <path d="M0,4.2 C24,-30 59,-40 94,-14 C64,-12 30,-4 2,13 Z" transform="rotate(-176)"/>
+        <path d="M0,4.2 C24,-30 59,-40 94,-14 C64,-12 30,-4 2,13 Z" transform="rotate(-148)"/>
+        <path d="M0,4.2 C24,-30 59,-40 94,-14 C64,-12 30,-4 2,13 Z" transform="rotate(-120)"/>
+        <path d="M0,4.2 C24,-30 59,-40 94,-14 C64,-12 30,-4 2,13 Z" transform="rotate(-94)"/>
+        <path d="M0,4.2 C24,-30 59,-40 94,-14 C64,-12 30,-4 2,13 Z" transform="rotate(-68)"/>
+        <path d="M0,4.2 C24,-30 59,-40 94,-14 C64,-12 30,-4 2,13 Z" transform="rotate(-42)"/>
+        <path d="M0,4.2 C24,-30 59,-40 94,-14 C64,-12 30,-4 2,13 Z" transform="rotate(-16)"/>
+        <path d="M0,4.2 C24,-30 59,-40 94,-14 C64,-12 30,-4 2,13 Z" transform="rotate(12)"/>
+        <path d="M0,3.1 C16,-22 39,-29 62,-10 C42,-9 20,-3 1,9 Z" transform="rotate(-162)"/>
+        <path d="M0,3.1 C16,-22 39,-29 62,-10 C42,-9 20,-3 1,9 Z" transform="rotate(-134)"/>
+        <path d="M0,3.1 C16,-22 39,-29 62,-10 C42,-9 20,-3 1,9 Z" transform="rotate(-106)"/>
+        <path d="M0,3.1 C16,-22 39,-29 62,-10 C42,-9 20,-3 1,9 Z" transform="rotate(-80)"/>
+        <path d="M0,3.1 C16,-22 39,-29 62,-10 C42,-9 20,-3 1,9 Z" transform="rotate(-54)"/>
+        <path d="M0,3.1 C16,-22 39,-29 62,-10 C42,-9 20,-3 1,9 Z" transform="rotate(-28)"/>
+      </g>
+      <circle cx="86" cy="107" r="6"/>
+      <circle cx="99" cy="111" r="6"/>
+      <circle cx="90" cy="118" r="5"/>
+    </g>
+    <g id="hb" fill="#3E6B22">
+      <path d="M96,280 C99,220 98,160 94,116 L106,116 C110,160 110,220 112,280 Z"/>
+      <g transform="translate(100,114)">
+        <path d="M0,4.5 C22,-32 54,-42 86,-14 C58,-13 28,-4 2,13 Z" transform="rotate(-172)"/>
+        <path d="M0,4.5 C22,-32 54,-42 86,-14 C58,-13 28,-4 2,13 Z" transform="rotate(-142)"/>
+        <path d="M0,4.5 C22,-32 54,-42 86,-14 C58,-13 28,-4 2,13 Z" transform="rotate(-112)"/>
+        <path d="M0,4.5 C22,-32 54,-42 86,-14 C58,-13 28,-4 2,13 Z" transform="rotate(-86)"/>
+        <path d="M0,4.5 C22,-32 54,-42 86,-14 C58,-13 28,-4 2,13 Z" transform="rotate(-58)"/>
+        <path d="M0,4.5 C22,-32 54,-42 86,-14 C58,-13 28,-4 2,13 Z" transform="rotate(-30)"/>
+        <path d="M0,4.5 C22,-32 54,-42 86,-14 C58,-13 28,-4 2,13 Z" transform="rotate(0)"/>
+        <path d="M0,3.2 C15,-24 35,-31 56,-11 C38,-10 18,-3 1,10 Z" transform="rotate(-157)"/>
+        <path d="M0,3.2 C15,-24 35,-31 56,-11 C38,-10 18,-3 1,10 Z" transform="rotate(-127)"/>
+        <path d="M0,3.2 C15,-24 35,-31 56,-11 C38,-10 18,-3 1,10 Z" transform="rotate(-99)"/>
+        <path d="M0,3.2 C15,-24 35,-31 56,-11 C38,-10 18,-3 1,10 Z" transform="rotate(-72)"/>
+        <path d="M0,3.2 C15,-24 35,-31 56,-11 C38,-10 18,-3 1,10 Z" transform="rotate(-44)"/>
+        <path d="M0,3.2 C15,-24 35,-31 56,-11 C38,-10 18,-3 1,10 Z" transform="rotate(-15)"/>
+      </g>
+      <circle cx="95" cy="121" r="6"/>
+      <circle cx="107" cy="123" r="6"/>
+    </g>
+    <g id="hc" fill="#3E6B22">
+      <path d="M96,280 C98,250 97,226 95,206 L104,206 C107,228 108,252 110,280 Z"/>
+      <g transform="translate(99,204)">
+        <path d="M0,3.4 C16,-23 39,-31 62,-10 C42,-9 20,-3 1,10 Z" transform="rotate(-168)"/>
+        <path d="M0,3.4 C16,-23 39,-31 62,-10 C42,-9 20,-3 1,10 Z" transform="rotate(-136)"/>
+        <path d="M0,3.4 C16,-23 39,-31 62,-10 C42,-9 20,-3 1,10 Z" transform="rotate(-106)"/>
+        <path d="M0,3.4 C16,-23 39,-31 62,-10 C42,-9 20,-3 1,10 Z" transform="rotate(-76)"/>
+        <path d="M0,3.4 C16,-23 39,-31 62,-10 C42,-9 20,-3 1,10 Z" transform="rotate(-46)"/>
+        <path d="M0,3.4 C16,-23 39,-31 62,-10 C42,-9 20,-3 1,10 Z" transform="rotate(-14)"/>
+        <path d="M0,2.4 C10,-17 25,-22 40,-8 C27,-7 13,-2 1,7 Z" transform="rotate(-152)"/>
+        <path d="M0,2.4 C10,-17 25,-22 40,-8 C27,-7 13,-2 1,7 Z" transform="rotate(-121)"/>
+        <path d="M0,2.4 C10,-17 25,-22 40,-8 C27,-7 13,-2 1,7 Z" transform="rotate(-91)"/>
+        <path d="M0,2.4 C10,-17 25,-22 40,-8 C27,-7 13,-2 1,7 Z" transform="rotate(-60)"/>
+        <path d="M0,2.4 C10,-17 25,-22 40,-8 C27,-7 13,-2 1,7 Z" transform="rotate(-30)"/>
+      </g>
+    </g>
+    <g id="hd" fill="#3E6B22">
+      <path d="M97,280 C100,224 99,168 97,130 L107,130 C109,168 110,224 113,280 Z"/>
+      <g transform="translate(102,128)">
+        <path d="M0,4.2 C21,-29 52,-39 82,-13 C56,-12 26,-4 2,13 Z" transform="rotate(-178)"/>
+        <path d="M0,4.2 C21,-29 52,-39 82,-13 C56,-12 26,-4 2,13 Z" transform="rotate(-152)"/>
+        <path d="M0,4.2 C21,-29 52,-39 82,-13 C56,-12 26,-4 2,13 Z" transform="rotate(-128)"/>
+        <path d="M0,4.2 C21,-29 52,-39 82,-13 C56,-12 26,-4 2,13 Z" transform="rotate(-104)"/>
+        <path d="M0,4.2 C21,-29 52,-39 82,-13 C56,-12 26,-4 2,13 Z" transform="rotate(-80)"/>
+        <path d="M0,4.2 C21,-29 52,-39 82,-13 C56,-12 26,-4 2,13 Z" transform="rotate(-56)"/>
+        <path d="M0,4.2 C21,-29 52,-39 82,-13 C56,-12 26,-4 2,13 Z" transform="rotate(-32)"/>
+        <path d="M0,4.2 C21,-29 52,-39 82,-13 C56,-12 26,-4 2,13 Z" transform="rotate(-8)"/>
+        <path d="M0,4.2 C21,-29 52,-39 82,-13 C56,-12 26,-4 2,13 Z" transform="rotate(16)"/>
+        <path d="M0,3.1 C14,-22 34,-29 54,-10 C37,-9 17,-3 1,9 Z" transform="rotate(-165)"/>
+        <path d="M0,3.1 C14,-22 34,-29 54,-10 C37,-9 17,-3 1,9 Z" transform="rotate(-140)"/>
+        <path d="M0,3.1 C14,-22 34,-29 54,-10 C37,-9 17,-3 1,9 Z" transform="rotate(-116)"/>
+        <path d="M0,3.1 C14,-22 34,-29 54,-10 C37,-9 17,-3 1,9 Z" transform="rotate(-92)"/>
+        <path d="M0,3.1 C14,-22 34,-29 54,-10 C37,-9 17,-3 1,9 Z" transform="rotate(-68)"/>
+        <path d="M0,3.1 C14,-22 34,-29 54,-10 C37,-9 17,-3 1,9 Z" transform="rotate(-44)"/>
+        <path d="M0,3.1 C14,-22 34,-29 54,-10 C37,-9 17,-3 1,9 Z" transform="rotate(-20)"/>
+      </g>
+      <circle cx="96" cy="136" r="5"/>
+      <circle cx="108" cy="138" r="5"/>
+    </g>
+  </defs>
+  <g opacity="0.4">
+    <use href="#hc" transform="translate(70,158) scale(0.65)"/>
+    <use href="#ha" transform="translate(330,144) scale(0.7)"/>
+    <use href="#hc" transform="translate(760,172) scale(0.6)"/>
+    <use href="#hb" transform="translate(1180,158) scale(0.65)"/>
+    <use href="#hc" transform="translate(1560,186) scale(0.55)"/>
+  </g>
+  <g>
+    <use href="#ha" transform="translate(-30,60) scale(1)"/>
+    <use href="#hb" transform="translate(150,102) scale(0.85)"/>
+    <use href="#hd" transform="translate(430,88) scale(0.9)"/>
+    <use href="#hc" transform="translate(620,130) scale(0.75)"/>
+    <use href="#ha" transform="translate(880,74) scale(0.95)"/>
+    <use href="#hb" transform="translate(1080,116) scale(0.8)"/>
+    <use href="#hd" transform="translate(1330,96) scale(0.87)"/>
+    <use href="#hc" transform="translate(1520,144) scale(0.7)"/>
+    <use href="#ha" transform="translate(1680,88) scale(0.9)"/>
+  </g>
+</svg>

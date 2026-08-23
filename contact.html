@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact — Café United Rotterdam</title>
+<meta name="description" content="Contact met Café United: Bergweg 199A, 3037 EJ Rotterdam. Bel of stuur een bericht.">
+<link rel="icon" href="assets/img/logo.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+<!-- Marks that scripting is alive, before first paint. The scroll-reveal
+     animation is applied only under .js, so if main.js never runs the content
+     is simply visible instead of stuck at opacity:0. -->
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Naar hoofdinhoud</a>
+
+  <header class="site-header site-header--solid">
+    <div class="site-header__inner">
+      <button class="burger" id="burgerBtn" aria-expanded="false" aria-controls="navPanel" aria-label="Menu openen">
+        <span class="burger__box" aria-hidden="true"><span class="burger__bar"></span><span class="burger__bar"></span><span class="burger__bar"></span></span>
+      </button>
+      <a class="site-header__logo" href="index.html" aria-label="Café United — home"><img class="logo-img" src="assets/img/logo.png" alt="Café United" width="700" height="441"></a>
+      <div class="header-cta">
+        <a class="btn btn--ghost btn--sm" href="events.html">Agenda</a>
+        <a class="btn btn--accent btn--sm" href="reserveren.html">Reserveer</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="panel" id="navPanel" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+    <div class="panel__backdrop" data-close-panel></div>
+    <div class="panel__body" tabindex="-1">
+      <div class="panel__head">
+        <img class="logo-img" src="assets/img/logo.png" alt="Café United" width="700" height="441">
+        <button class="panel__close" data-close-panel>Sluiten &times;</button>
+      </div>
+      <nav class="panel__nav" aria-label="Hoofdmenu">
+        <a href="index.html">Home</a>
+        <a href="menu.html">Menu</a>
+        <a href="events.html">Events</a>
+        <a href="reserveren.html">Reserveren</a>
+        <a href="over-ons.html">Over ons</a>
+        <a href="vacatures.html">Vacatures</a>
+        <a href="contact.html" aria-current="page">Contact</a>
+      </nav>
+      <div class="panel__foot">
+        <span class="badge" data-open-badge></span>
+        <a class="btn btn--primary" href="reserveren.html">Reserveer een tafel</a>
+        <a class="btn btn--ghost btn--sm" href="tel:+31616050192">06 16 05 01 92</a>
+      </div>
+    </div>
+  </div>
+
+<main id="main">
+
+  <section class="section">
+    <div class="wrap">
+      <div class="contact-col reveal">
+
+        <p class="crumbs"><a href="index.html">Home</a> / Contact</p>
+        <h1 class="contact-title">Contact</h1>
+
+        <p class="contact-brand">Caf&eacute; United</p>
+
+        <ul class="contact-list">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg><span><a href="https://www.google.com/maps/search/?api=1&query=Bergweg+199A+3037+EJ+Rotterdam" target="_blank" rel="noopener">Bergweg 199A<br>3037 EJ Rotterdam</a></span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="m3.5 7.2 8.5 6 8.5-6"/></svg><span><a href="mailto:cafeunitedrotterdam@gmail.com">cafeunitedrotterdam@gmail.com</a></span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 3.5h3l1.6 4-2 1.4a12.5 12.5 0 0 0 6.3 6.3l1.4-2 4 1.6v3a2 2 0 0 1-2.2 2A17.5 17.5 0 0 1 4.2 5.7a2 2 0 0 1 2-2.2Z"/></svg><span><a href="tel:+31616050192">06 16 05 01 92</a></span></li>
+        </ul>
+
+        <div class="contact-block">
+          <h2 class="contact-sub">Openingstijden</h2>
+          <table class="hours" data-hours-table>
+            <tbody>
+              <tr data-day="1"><th scope="row">Maandag</th><td class="is-closed">Gesloten</td></tr>
+              <tr data-day="2"><th scope="row">Dinsdag</th><td>15:00 – 01:00</td></tr>
+              <tr data-day="3"><th scope="row">Woensdag</th><td>15:00 – 01:00</td></tr>
+              <tr data-day="4"><th scope="row">Donderdag</th><td>15:00 – 01:00</td></tr>
+              <tr data-day="5"><th scope="row">Vrijdag</th><td>15:00 – 02:30</td></tr>
+              <tr data-day="6"><th scope="row">Zaterdag</th><td>15:00 – 02:30</td></tr>
+              <tr data-day="0"><th scope="row">Zondag</th><td>11:00 – 01:00</td></tr>
+            </tbody>
+          </table>
+          <p class="kitchen-note" style="margin:16px 0 0"><strong>Keuken:</strong> sluit een half uur voor sluitingstijd &mdash; tot 00:30, en op vrijdag en zaterdag tot 02:00.</p>
+          <p style="margin:16px 0 0"><span class="badge" data-open-badge></span></p>
+        </div>
+
+        <p class="contact-note">Gebruik dit formulier voor algemene vragen, opmerkingen of
+          klachten &mdash; niet voor reserveringen. Een tafel regel je sneller via
+          <a href="reserveren.html">reserveren</a>.</p>
+
+        <form class="form form--2col" data-contact-form data-message-title="Bericht via contactformulier" novalidate>
+          <fieldset class="field field--full field--set">
+            <legend>Aanhef</legend>
+            <div class="radio-row">
+              <label class="radio"><input type="radio" name="aanhef" value="Dhr."><span>Dhr.</span></label>
+              <label class="radio"><input type="radio" name="aanhef" value="Mevr."><span>Mevr.</span></label>
+              <label class="radio"><input type="radio" name="aanhef" value="Anders"><span>Anders</span></label>
+            </div>
+          </fieldset>
+
+          <div class="field">
+            <label for="con-first">Voornaam <span class="req">*</span></label>
+            <input id="con-first" name="voornaam" type="text" autocomplete="given-name" required>
+          </div>
+          <div class="field">
+            <label for="con-last">Achternaam <span class="req">*</span></label>
+            <input id="con-last" name="achternaam" type="text" autocomplete="family-name" required>
+          </div>
+          <div class="field field--full">
+            <label for="con-email">E-mail <span class="req">*</span></label>
+            <input id="con-email" name="email" type="email" autocomplete="email" required>
+          </div>
+          <div class="field field--full">
+            <label for="con-phone">Telefoon</label>
+            <input id="con-phone" name="telefoon" type="tel" autocomplete="tel">
+          </div>
+          <div class="field field--full">
+            <label for="con-msg">Vragen <span class="req">*</span></label>
+            <textarea id="con-msg" name="bericht" required></textarea>
+          </div>
+          <div class="field--full">
+            <button class="btn btn--primary btn--block" type="submit">Verzenden</button>
+          </div>
+          <div class="form__status field--full" role="status" aria-live="polite"></div>
+        </form>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+  <footer class="site-footer">
+    <div class="site-footer__wordmark" aria-hidden="true">ROTTERDAM</div>
+    <div class="wrap site-footer__grid">
+      <div>
+        <img class="logo-img" src="assets/img/logo.png" alt="Café United" width="700" height="441">
+        <p>Tropisch caf&eacute; &amp; bar in Rotterdam-Noord.<br>Van de middag tot diep in de nacht.</p>
+        <span class="badge" data-open-badge></span>
+        <p class="footer-social">
+          <a href="https://www.instagram.com/cafeunitedrotterdam/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.1" cy="6.9" r="1.15" fill="currentColor" stroke="none"/></svg><span>@cafeunitedrotterdam</span></a>
+        </p>
+      </div>
+      <div>
+        <h4>Bezoek ons</h4>
+        <address>
+          Bergweg 199A<br>3037 EJ Rotterdam<br>
+          <a href="tel:+31616050192">06 16 05 01 92</a><br>
+          <a href="mailto:cafeunitedrotterdam@gmail.com">cafeunitedrotterdam@gmail.com</a><br>
+          <a href="https://www.google.com/maps/search/?api=1&query=Bergweg+199A+3037+EJ+Rotterdam" target="_blank" rel="noopener">Route plannen</a>
+        </address>
+      </div>
+      <div>
+        <h4>Openingstijden</h4>
+        <dl class="footer-hours">
+          <dt>Maandag</dt><dd>Gesloten</dd>
+          <dt>Dinsdag</dt><dd>15:00 – 01:00</dd>
+          <dt>Woensdag</dt><dd>15:00 – 01:00</dd>
+          <dt>Donderdag</dt><dd>15:00 – 01:00</dd>
+          <dt>Vrijdag</dt><dd>15:00 – 02:30</dd>
+          <dt>Zaterdag</dt><dd>15:00 – 02:30</dd>
+          <dt>Zondag</dt><dd>11:00 – 01:00</dd>
+        </dl>
+        <p class="footer-kitchen">Keuken sluit een half uur voor sluitingstijd.</p>
+      </div>
+    </div>
+    <div class="site-footer__bar">
+      <div class="wrap">
+        <p>&copy; <span data-year></span> Caf&eacute; United — Bergweg 199A, Rotterdam</p>
+        <p class="site-footer__legal">KvK <span class="site-footer__num">91123682</span>
+          &middot; BTW <span class="site-footer__num">NL004867808B45</span></p>
+        <p><a href="menu.html">Menu</a> · <a href="events.html">Events</a> · <a href="reserveren.html">Reserveren</a> · <a href="over-ons.html">Over ons</a> · <a href="vacatures.html">Vacatures</a> · <a href="contact.html">Contact</a></p>
+      </div>
+    </div>
+  </footer>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>

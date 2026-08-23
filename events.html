@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Events — Café United Rotterdam</title>
+<meta name="description" content="Elke vrijdag bar special bij Café United in Rotterdam-Noord. Wat er verder speelt, lees je op onze socials.">
+<link rel="icon" href="assets/img/logo.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+<!-- Marks that scripting is alive, before first paint. The scroll-reveal
+     animation is applied only under .js, so if main.js never runs the content
+     is simply visible instead of stuck at opacity:0. -->
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Naar hoofdinhoud</a>
+
+  <header class="site-header site-header--solid">
+    <div class="site-header__inner">
+      <button class="burger" id="burgerBtn" aria-expanded="false" aria-controls="navPanel" aria-label="Menu openen">
+        <span class="burger__box" aria-hidden="true"><span class="burger__bar"></span><span class="burger__bar"></span><span class="burger__bar"></span></span>
+      </button>
+      <a class="site-header__logo" href="index.html" aria-label="Café United — home"><img class="logo-img" src="assets/img/logo.png" alt="Café United" width="700" height="441"></a>
+      <div class="header-cta">
+        <a class="btn btn--ghost btn--sm" href="events.html">Agenda</a>
+        <a class="btn btn--accent btn--sm" href="reserveren.html">Reserveer</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="panel" id="navPanel" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+    <div class="panel__backdrop" data-close-panel></div>
+    <div class="panel__body" tabindex="-1">
+      <div class="panel__head">
+        <img class="logo-img" src="assets/img/logo.png" alt="Café United" width="700" height="441">
+        <button class="panel__close" data-close-panel>Sluiten &times;</button>
+      </div>
+      <nav class="panel__nav" aria-label="Hoofdmenu">
+        <a href="index.html">Home</a>
+        <a href="menu.html">Menu</a>
+        <a href="events.html" aria-current="page">Events</a>
+        <a href="reserveren.html">Reserveren</a>
+        <a href="over-ons.html">Over ons</a>
+        <a href="vacatures.html">Vacatures</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div class="panel__foot">
+        <span class="badge" data-open-badge></span>
+        <a class="btn btn--primary" href="reserveren.html">Reserveer een tafel</a>
+        <a class="btn btn--ghost btn--sm" href="tel:+31616050192">06 16 05 01 92</a>
+      </div>
+    </div>
+  </div>
+
+<main id="main">
+
+  <section class="page-head">
+    <div class="wrap">
+      <p class="crumbs"><a href="index.html">Home</a> / Events</p>
+      <h1>Events</h1>
+      <p>Vaste programmering houden we bewust klein. Elke vrijdag draait de bar een special &mdash;
+        verder wisselt het per week, en dat lees je op onze socials.</p>
+    </div>
+    <div class="palm-band palm-band--soft" aria-hidden="true"></div>
+  </section>
+
+  <section class="section has-wallpaper">
+    <div class="wallpaper" data-parallax="1" aria-hidden="true"></div>
+    <div class="wrap reveal">
+      <div class="ecard-solo">
+        <article class="card ecard">
+          <div class="ecard__top">
+            <div class="ecard__day">Elke vrijdag</div>
+            <div class="ecard__time">Vanaf 15:00</div>
+          </div>
+          <div class="ecard__body">
+            <span class="tag">Bar</span>
+            <h3>Bar special</h3>
+            <p>Elke vrijdag draait de bar een special. Wat het die week wordt, hoor je bij ons aan
+              de bar &mdash; of je ziet het voorbijkomen op onze socials.</p>
+            <div class="btn-row">
+              <a class="btn btn--ghost btn--sm" href="https://www.instagram.com/cafeunitedrotterdam/" target="_blank" rel="noopener">Volg ons op Instagram</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="wrap wrap--narrow center reveal">
+      <p class="eyebrow">Zelf iets organiseren?</p>
+      <h2 class="title">Jouw feest bij United</h2>
+      <p class="lede">Verjaardag, bandje, boekpresentatie of borrel met het team — we denken graag mee
+        over de invulling, de hapjes en de muziek.</p>
+      <div class="btn-row btn-row--center">
+        <a class="btn btn--primary" href="contact.html">Neem contact op</a>
+        <a class="btn btn--ghost" href="tel:+31616050192">Bel 06 16 05 01 92</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+  <footer class="site-footer">
+    <div class="site-footer__wordmark" aria-hidden="true">ROTTERDAM</div>
+    <div class="wrap site-footer__grid">
+      <div>
+        <img class="logo-img" src="assets/img/logo.png" alt="Café United" width="700" height="441">
+        <p>Tropisch caf&eacute; &amp; bar in Rotterdam-Noord.<br>Van de middag tot diep in de nacht.</p>
+        <span class="badge" data-open-badge></span>
+        <p class="footer-social">
+          <a href="https://www.instagram.com/cafeunitedrotterdam/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.1" cy="6.9" r="1.15" fill="currentColor" stroke="none"/></svg><span>@cafeunitedrotterdam</span></a>
+        </p>
+      </div>
+      <div>
+        <h4>Bezoek ons</h4>
+        <address>
+          Bergweg 199A<br>3037 EJ Rotterdam<br>
+          <a href="tel:+31616050192">06 16 05 01 92</a><br>
+          <a href="mailto:cafeunitedrotterdam@gmail.com">cafeunitedrotterdam@gmail.com</a><br>
+          <a href="https://www.google.com/maps/search/?api=1&query=Bergweg+199A+3037+EJ+Rotterdam" target="_blank" rel="noopener">Route plannen</a>
+        </address>
+      </div>
+      <div>
+        <h4>Openingstijden</h4>
+        <dl class="footer-hours">
+          <dt>Maandag</dt><dd>Gesloten</dd>
+          <dt>Dinsdag</dt><dd>15:00 – 01:00</dd>
+          <dt>Woensdag</dt><dd>15:00 – 01:00</dd>
+          <dt>Donderdag</dt><dd>15:00 – 01:00</dd>
+          <dt>Vrijdag</dt><dd>15:00 – 02:30</dd>
+          <dt>Zaterdag</dt><dd>15:00 – 02:30</dd>
+          <dt>Zondag</dt><dd>11:00 – 01:00</dd>
+        </dl>
+        <p class="footer-kitchen">Keuken sluit een half uur voor sluitingstijd.</p>
+      </div>
+    </div>
+    <div class="site-footer__bar">
+      <div class="wrap">
+        <p>&copy; <span data-year></span> Caf&eacute; United — Bergweg 199A, Rotterdam</p>
+        <p class="site-footer__legal">KvK <span class="site-footer__num">91123682</span>
+          &middot; BTW <span class="site-footer__num">NL004867808B45</span></p>
+        <p><a href="menu.html">Menu</a> · <a href="events.html">Events</a> · <a href="reserveren.html">Reserveren</a> · <a href="over-ons.html">Over ons</a> · <a href="vacatures.html">Vacatures</a> · <a href="contact.html">Contact</a></p>
+      </div>
+    </div>
+  </footer>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>

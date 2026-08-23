@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vacatures — Café United Rotterdam</title>
+<meta name="description" content="Werken bij Café United in Rotterdam-Noord: bar, bediening, keuken en bezorging. Bekijk de openstaande vacatures.">
+<link rel="icon" href="assets/img/logo.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+<!-- Marks that scripting is alive, before first paint. The scroll-reveal
+     animation is applied only under .js, so if main.js never runs the content
+     is simply visible instead of stuck at opacity:0. -->
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Naar hoofdinhoud</a>
+
+  <header class="site-header site-header--solid">
+    <div class="site-header__inner">
+      <button class="burger" id="burgerBtn" aria-expanded="false" aria-controls="navPanel" aria-label="Menu openen">
+        <span class="burger__box" aria-hidden="true"><span class="burger__bar"></span><span class="burger__bar"></span><span class="burger__bar"></span></span>
+      </button>
+      <a class="site-header__logo" href="index.html" aria-label="Café United — home"><img class="logo-img" src="assets/img/logo.png" alt="Café United" width="700" height="441"></a>
+      <div class="header-cta">
+        <a class="btn btn--ghost btn--sm" href="events.html">Agenda</a>
+        <a class="btn btn--accent btn--sm" href="reserveren.html">Reserveer</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="panel" id="navPanel" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+    <div class="panel__backdrop" data-close-panel></div>
+    <div class="panel__body" tabindex="-1">
+      <div class="panel__head">
+        <img class="logo-img" src="assets/img/logo.png" alt="Café United" width="700" height="441">
+        <button class="panel__close" data-close-panel>Sluiten &times;</button>
+      </div>
+      <nav class="panel__nav" aria-label="Hoofdmenu">
+        <a href="index.html">Home</a>
+        <a href="menu.html">Menu</a>
+        <a href="events.html">Events</a>
+        <a href="reserveren.html">Reserveren</a>
+        <a href="over-ons.html">Over ons</a>
+        <a href="vacatures.html" aria-current="page">Vacatures</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div class="panel__foot">
+        <span class="badge" data-open-badge></span>
+        <a class="btn btn--primary" href="reserveren.html">Reserveer een tafel</a>
+        <a class="btn btn--ghost btn--sm" href="tel:+31616050192">06 16 05 01 92</a>
+      </div>
+    </div>
+  </div>
+
+<main id="main">
+
+  <section class="page-head">
+    <div class="wrap">
+      <p class="crumbs"><a href="index.html">Home</a> / Vacatures</p>
+      <h1>Kom bij ons werken</h1>
+      <p>We zoeken mensen die van gastvrijheid houden en van een volle zaak geen stress krijgen.
+        Ervaring is fijn, karakter is belangrijker. Beantwoord een paar korte vragen &mdash;
+        daarna weten we precies wie je bent en wat je zoekt.</p>
+    </div>
+    <div class="palm-band palm-band--soft" aria-hidden="true"></div>
+  </section>
+
+  <section class="section section--wash">
+    <div class="wrap">
+      <form class="apply" data-apply data-contact-form data-message-title="Sollicitatie" novalidate>
+        <div class="apply__head" hidden>
+          <button class="apply__prev" type="button" data-apply-prev hidden>
+            <span aria-hidden="true">&larr;</span> Vorige
+          </button>
+          <span class="apply__eta" data-apply-eta></span>
+        </div>
+        <div class="apply__bar" role="presentation" hidden><span data-apply-bar></span></div>
+        <p class="apply__count" data-apply-count aria-live="polite" hidden></p>
+
+        <fieldset class="apply__step" data-apply-step data-apply-name="rol">
+          <legend class="apply__legend">
+            <span class="apply__lead">Hoi <span aria-hidden="true">&#128075;</span></span>
+            <span class="apply__q">Wat wil je bij ons doen?</span>
+          </legend>
+          <div class="chips">
+            <input class="chip__input" type="radio" id="rol-0" name="rol" value="Koken" data-label="Wat je wilt doen">
+            <label class="chip" for="rol-0">Koken</label>
+            <input class="chip__input" type="radio" id="rol-1" name="rol" value="Gasten bedienen" data-label="Wat je wilt doen">
+            <label class="chip" for="rol-1">Gasten bedienen</label>
+            <input class="chip__input" type="radio" id="rol-2" name="rol" value="Achter de bar" data-label="Wat je wilt doen">
+            <label class="chip" for="rol-2">Achter de bar</label>
+            <input class="chip__input" type="radio" id="rol-3" name="rol" value="Een team aansturen" data-label="Wat je wilt doen">
+            <label class="chip" for="rol-3">Een team aansturen</label>
+            <input class="chip__input" type="radio" id="rol-4" name="rol" value="Meehelpen met schoonmaak" data-label="Wat je wilt doen">
+            <label class="chip" for="rol-4">Meehelpen met schoonmaak</label>
+            <input class="chip__input" type="radio" id="rol-5" name="rol" value="Bezorgen" data-label="Wat je wilt doen">
+            <label class="chip" for="rol-5">Bezorgen</label>
+            <input class="chip__input" type="radio" id="rol-6" name="rol" value="Open sollicitatie" data-label="Wat je wilt doen">
+            <label class="chip" for="rol-6">Open sollicitatie</label>
+          </div>
+          <p class="apply__err" data-apply-err role="alert"></p>
+        </fieldset>
+
+        <fieldset class="apply__step" data-apply-step data-apply-name="ervaring">
+          <legend class="apply__legend">
+            
+            <span class="apply__q">Hoeveel ervaring heb je hierin?</span>
+          </legend>
+          <div class="chips">
+            <input class="chip__input" type="radio" id="ervaring-0" name="ervaring" value="Starter (geen ervaring)" data-label="Ervaring">
+            <label class="chip" for="ervaring-0">Starter (geen ervaring)</label>
+            <input class="chip__input" type="radio" id="ervaring-1" name="ervaring" value="Beginner (0 &ndash; 1 jaar)" data-label="Ervaring">
+            <label class="chip" for="ervaring-1">Beginner (0&nbsp;&ndash;&nbsp;1 jaar)</label>
+            <input class="chip__input" type="radio" id="ervaring-2" name="ervaring" value="Ervaren (1 &ndash; 3 jaar)" data-label="Ervaring">
+            <label class="chip" for="ervaring-2">Ervaren (1&nbsp;&ndash;&nbsp;3 jaar)</label>
+            <input class="chip__input" type="radio" id="ervaring-3" name="ervaring" value="Expert (3+ jaar)" data-label="Ervaring">
+            <label class="chip" for="ervaring-3">Expert (3+ jaar)</label>
+          </div>
+          <p class="apply__err" data-apply-err role="alert"></p>
+        </fieldset>
+
+        <fieldset class="apply__step" data-apply-step data-apply-name="hygiene">
+          <legend class="apply__legend">
+            
+            <span class="apply__q">Heb je een certificaat Sociale Hygi&euml;ne?</span>
+          </legend>
+          <div class="chips">
+            <input class="chip__input" type="radio" id="hygiene-0" name="hygiene" value="Ja" data-label="Sociale Hygi&euml;ne">
+            <label class="chip" for="hygiene-0">Ja</label>
+            <input class="chip__input" type="radio" id="hygiene-1" name="hygiene" value="Nee" data-label="Sociale Hygi&euml;ne">
+            <label class="chip" for="hygiene-1">Nee</label>
+            <input class="chip__input" type="radio" id="hygiene-2" name="hygiene" value="In aanvraag" data-label="Sociale Hygi&euml;ne">
+            <label class="chip" for="hygiene-2">In aanvraag</label>
+          </div>
+          <p class="apply__note">Niet verplicht om te solliciteren &mdash; we vragen het alleen even.</p>
+          <p class="apply__err" data-apply-err role="alert"></p>
+        </fieldset>
+
+        <fieldset class="apply__step" data-apply-step data-apply-name="beschikbaarheid">
+          <legend class="apply__legend">
+            
+            <span class="apply__q">Hoeveel uur per week ben je beschikbaar?</span>
+          </legend>
+          <div class="chips">
+            <input class="chip__input" type="radio" id="beschikbaarheid-0" name="beschikbaarheid" value="0 &ndash; 16 uur" data-label="Beschikbaarheid">
+            <label class="chip" for="beschikbaarheid-0">0&nbsp;&ndash;&nbsp;16 uur</label>
+            <input class="chip__input" type="radio" id="beschikbaarheid-1" name="beschikbaarheid" value="16 &ndash; 32 uur" data-label="Beschikbaarheid">
+            <label class="chip" for="beschikbaarheid-1">16&nbsp;&ndash;&nbsp;32 uur</label>
+            <input class="chip__input" type="radio" id="beschikbaarheid-2" name="beschikbaarheid" value="32+ uur" data-label="Beschikbaarheid">
+            <label class="chip" for="beschikbaarheid-2">32+ uur</label>
+          </div>
+          <p class="apply__err" data-apply-err role="alert"></p>
+        </fieldset>
+
+        <fieldset class="apply__step" data-apply-step data-apply-name="startmoment">
+          <legend class="apply__legend">
+            
+            <span class="apply__q">Wanneer kun je beginnen?</span>
+          </legend>
+          <div class="chips">
+            <input class="chip__input" type="radio" id="startmoment-0" name="startmoment" value="Per direct" data-label="Startmoment">
+            <label class="chip" for="startmoment-0">Per direct</label>
+            <input class="chip__input" type="radio" id="startmoment-1" name="startmoment" value="Vanaf een datum" data-label="Startmoment">
+            <label class="chip" for="startmoment-1">Vanaf een datum</label>
+          </div>
+          <div class="apply__reveal" data-apply-reveal>
+            <div class="field">
+              <label for="startdatum">Vanaf welke datum?</label>
+              <input id="startdatum" name="startdatum" type="date" data-label="Startdatum">
+            </div>
+          </div>
+          <p class="apply__err" data-apply-err role="alert"></p>
+        </fieldset>
+
+        <fieldset class="apply__step" data-apply-step data-apply-name="naam">
+          <legend class="apply__legend">
+            <span class="apply__lead">We leren je graag kennen.</span>
+            <span class="apply__q">Hoe heet je?</span>
+          </legend>
+          <div class="apply__fields">
+            <div class="field">
+              <label for="voornaam">Voornaam <span class="req">*</span></label>
+              <input id="voornaam" name="voornaam" type="text" autocomplete="given-name">
+            </div>
+            <div class="field">
+              <label for="achternaam">Achternaam <span class="req">*</span></label>
+              <input id="achternaam" name="achternaam" type="text" autocomplete="family-name">
+            </div>
+          </div>
+          <p class="apply__err" data-apply-err role="alert"></p>
+        </fieldset>
+
+        <fieldset class="apply__step" data-apply-step data-apply-name="leeftijd">
+          <legend class="apply__legend">
+            <span class="apply__lead" data-apply-greet>Leuk je te ontmoeten, {voornaam}.</span>
+            <span class="apply__q">Hoe oud ben je?</span>
+          </legend>
+          <div class="apply__fields">
+            <div class="field">
+              <label for="leeftijd">Leeftijd <span class="req">*</span></label>
+              <input id="leeftijd" name="leeftijd" type="number" autocomplete="off" min="15" max="99" inputmode="numeric">
+            </div>
+          </div>
+          <p class="apply__err" data-apply-err role="alert"></p>
+        </fieldset>
+
+        <fieldset class="apply__step" data-apply-step data-apply-name="contact">
+          <legend class="apply__legend">
+            
+            <span class="apply__q">Hoe kunnen we je bereiken?</span>
+          </legend>
+          <div class="apply__fields">
+            <div class="field">
+              <label for="telefoon">Telefoon <span class="req">*</span></label>
+              <input id="telefoon" name="telefoon" type="tel" autocomplete="tel">
+            </div>
+            <div class="field">
+              <label for="email">E-mail <span class="req">*</span></label>
+              <input id="email" name="email" type="email" autocomplete="email">
+            </div>
+          </div>
+          <p class="apply__err" data-apply-err role="alert"></p>
+        </fieldset>
+
+        <fieldset class="apply__step" data-apply-step data-apply-name="afronden">
+          <legend class="apply__legend">
+            <span class="apply__lead">Bijna klaar.</span>
+            <span class="apply__q">Klopt dit zo?</span>
+          </legend>
+          <dl class="apply__summary" data-apply-summary></dl>
+          <div class="apply__fields">
+            <div class="field">
+              <label for="motivatie">Wil je nog iets kwijt? <span class="apply__opt">(optioneel)</span></label>
+              <textarea id="motivatie" name="motivatie" rows="3" data-label="Opmerking"
+                placeholder="Bijvoorbeeld waarom je bij ons wilt werken, of wanneer je juist niet kunt."></textarea>
+            </div>
+          </div>
+          <p class="apply__err" data-apply-err role="alert"></p>
+        </fieldset>
+
+        <div class="apply__foot">
+          <button class="btn btn--primary" type="button" data-apply-next hidden>Volgende</button>
+          <button class="btn btn--primary" type="submit" data-apply-submit>Verstuur sollicitatie</button>
+        </div>
+        <div class="form__status" role="status" aria-live="polite"></div>
+
+        <p class="apply__note">Liever gewoon even bellen of langskomen? Dat mag ook &mdash;
+          <a href="tel:+31616050192">06 16 05 01 92</a> of loop binnen op Bergweg 199A.</p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+  <footer class="site-footer">
+    <div class="site-footer__wordmark" aria-hidden="true">ROTTERDAM</div>
+    <div class="wrap site-footer__grid">
+      <div>
+        <img class="logo-img" src="assets/img/logo.png" alt="Café United" width="700" height="441">
+        <p>Tropisch caf&eacute; &amp; bar in Rotterdam-Noord.<br>Van de middag tot diep in de nacht.</p>
+        <span class="badge" data-open-badge></span>
+        <p class="footer-social">
+          <a href="https://www.instagram.com/cafeunitedrotterdam/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.1" cy="6.9" r="1.15" fill="currentColor" stroke="none"/></svg><span>@cafeunitedrotterdam</span></a>
+        </p>
+      </div>
+      <div>
+        <h4>Bezoek ons</h4>
+        <address>
+          Bergweg 199A<br>3037 EJ Rotterdam<br>
+          <a href="tel:+31616050192">06 16 05 01 92</a><br>
+          <a href="mailto:cafeunitedrotterdam@gmail.com">cafeunitedrotterdam@gmail.com</a><br>
+          <a href="https://www.google.com/maps/search/?api=1&query=Bergweg+199A+3037+EJ+Rotterdam" target="_blank" rel="noopener">Route plannen</a>
+        </address>
+      </div>
+      <div>
+        <h4>Openingstijden</h4>
+        <dl class="footer-hours">
+          <dt>Maandag</dt><dd>Gesloten</dd>
+          <dt>Dinsdag</dt><dd>15:00 – 01:00</dd>
+          <dt>Woensdag</dt><dd>15:00 – 01:00</dd>
+          <dt>Donderdag</dt><dd>15:00 – 01:00</dd>
+          <dt>Vrijdag</dt><dd>15:00 – 02:30</dd>
+          <dt>Zaterdag</dt><dd>15:00 – 02:30</dd>
+          <dt>Zondag</dt><dd>11:00 – 01:00</dd>
+        </dl>
+        <p class="footer-kitchen">Keuken sluit een half uur voor sluitingstijd.</p>
+      </div>
+    </div>
+    <div class="site-footer__bar">
+      <div class="wrap">
+        <p>&copy; <span data-year></span> Caf&eacute; United — Bergweg 199A, Rotterdam</p>
+        <p class="site-footer__legal">KvK <span class="site-footer__num">91123682</span>
+          &middot; BTW <span class="site-footer__num">NL004867808B45</span></p>
+        <p><a href="menu.html">Menu</a> · <a href="events.html">Events</a> · <a href="reserveren.html">Reserveren</a> · <a href="over-ons.html">Over ons</a> · <a href="vacatures.html">Vacatures</a> · <a href="contact.html">Contact</a></p>
+      </div>
+    </div>
+  </footer>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>
