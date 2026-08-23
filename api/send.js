@@ -9,9 +9,9 @@
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
 
 const TO      = process.env.MAIL_TO   || 'cafeunitedrotterdam@gmail.com';
-// Until a domain is verified in Resend, onboarding@resend.dev is the only
-// sender that works — and it only delivers to the Resend account owner.
-const FROM    = process.env.MAIL_FROM || 'Cafe United <onboarding@resend.dev>';
+// Sends from the verified mail.permaflare.com subdomain. Replies do not come
+// back here — reply_to points at the visitor, see below.
+const FROM    = process.env.MAIL_FROM || 'Café United <forms@mail.permaflare.com>';
 
 const MAX_FIELDS = 40;
 const MAX_LEN    = 2000;
@@ -79,9 +79,13 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Er is niets ingevuld om te versturen.' });
   }
 
-  const replyTo = rows
-    .map((r) => r.value)
-    .filter(isEmail)[0];
+  /* Replying to the notification should land in the visitor's inbox, so the
+     café can just hit reply. The form states which address that is; if it
+     didn't, fall back to the first address among the answers. */
+  const stated = clean(body.replyTo);
+  const replyTo = isEmail(stated)
+    ? stated
+    : rows.map((r) => r.value).filter(isEmail)[0];
 
   const text = [title, '', ...rows.map((r) => `${r.label}: ${r.value}`)].join('\n');
 

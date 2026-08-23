@@ -1,4 +1,9 @@
-# Café United — website
+| `MAIL_FROM`      | `Café United <forms@mail.permaflare.com>` (default) | nee |
+
+De afzender staat vast op `forms@mail.permaflare.com`; dat subdomein moet in
+Resend geverifieerd zijn, anders weigert Resend de mail. `reply_to` wijst naar
+het e-mailadres dat de bezoeker invulde, dus antwoorden gaat met "beantwoorden"
+rechtstreeks naar de gast.# Café United — website
 
 Statische site (HTML/CSS/JS, geen build) met één serverless functie voor het
 versturen van formulieren.
@@ -31,10 +36,12 @@ Zet deze environment variables in **Settings → Environment Variables**:
 | ---------------- | ----------------------------------------- | --------- |
 | `RESEND_API_KEY` | API-sleutel uit resend.com                | ja        |
 | `MAIL_TO`        | `cafeunitedrotterdam@gmail.com` (default) | nee       |
-| `MAIL_FROM`      | `Café United <post@jouwdomein.nl>`        | aanbevolen |
+| `MAIL_FROM`      | `Café United <forms@mail.permaflare.com>` (default) | nee |
 
-`MAIL_FROM` moet een adres zijn op een domein dat in Resend geverifieerd is.
-Zonder geverifieerd domein valt de functie terug op `onboarding@resend.dev`,
-en dat adres levert alleen af op het e-mailadres van de Resend-account zelf.
+De afzender is `forms@mail.permaflare.com`. Dat subdomein moet in Resend
+geverifieerd zijn (SPF/DKIM), anders weigert Resend de mail.
+
+`reply_to` wordt gezet op het e-mailadres dat de bezoeker invulde, dus
+"beantwoorden" in Gmail gaat rechtstreeks naar de gast.
 
 Zet de sleutel nooit in de code — hij hoort alleen in Vercel te staan.

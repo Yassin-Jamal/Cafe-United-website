@@ -428,6 +428,8 @@
       if (btn) { btn.disabled = true; btn.textContent = 'Versturen…'; }
 
       var pot = form.elements.website;
+      // so a reply from the café lands in the visitor's inbox, not ours
+      var mailField = form.querySelector('input[type="email"]');
 
       fetch('/api/send', {
         method: 'POST',
@@ -435,6 +437,7 @@
         body: JSON.stringify({
           title: subject,
           fields: collectFields(form),
+          replyTo: mailField ? mailField.value.trim() : '',
           website: pot ? pot.value : ''
         })
       }).then(function (r) {
