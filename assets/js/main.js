@@ -315,28 +315,84 @@
     return DAY_NAMES[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear();
   }
 
-  function buildMessage(form) {
-    var lines = [];
-    var heading = form.getAttribute('data-message-title') || 'Aanvraag';
-    lines.push(heading + ' via de website');
-    lines.push('');
+  /* Every named field that carries a value, as {label, value} pairs. One shape,
+     used both for the e-mail the backend sends and the WhatsApp fallback. */
+  function collectFields(form) {
+    var out = [];
     Array.prototype.forEach.call(form.elements, function (el) {
       if (!el.name || el.type === 'submit' || el.type === 'button') return;
+      if (el.name === 'website') return;                 // honeypot, never forwarded
       // an unchecked radio still reports its value attribute — without this
       // every option in the group would land in the message, not the chosen one
       if ((el.type === 'radio' || el.type === 'checkbox') && !el.checked) return;
       var v = (el.value || '').trim();
       if (!v) return;
       if (el.type === 'date') v = prettyDate(v);
-      lines.push(fieldLabel(form, el) + ': ' + v);
+      out.push({ label: fieldLabel(form, el), value: v });
     });
+    return out;
+  }
+
+  function buildMessage(form) {
+    var heading = form.getAttribute('data-message-title') || 'Aanvraag';
+    var lines = [heading + ' via de website', ''];
+    collectFields(form).forEach(function (f) { lines.push(f.label + ': ' + f.value); });
     return lines.join('\n');
   }
 
   document.querySelectorAll('form[data-contact-form]').forEach(function (form) {
     var status = form.querySelector('.form__status');
+    var sending = false;
+
+    /* Bots fill in every input they find; people never see this one. */
+    var potWrap = document.createElement('div');
+    potWrap.setAttribute('aria-hidden', 'true');
+    potWrap.style.cssText = 'position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden';
+    potWrap.innerHTML = '<label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label>';
+    form.appendChild(potWrap);
+
+    function setStatus(kind, build) {
+      if (!status) return;
+      status.classList.remove('form__status--ok', 'form__status--err');
+      status.classList.add('form__status', 'form__status--' + kind, 'is-shown');
+      status.textContent = '';
+      build(status);
+      status.setAttribute('tabindex', '-1');
+      status.focus();
+      status.scrollIntoView({ block: 'center', behavior: reduceMotion ? 'auto' : 'smooth' });
+    }
+
+    function para(text, bold) {
+      var p = document.createElement('p');
+      p.style.margin = '0 0 12px';
+      if (bold) {
+        var strong = document.createElement('strong');
+        strong.textContent = bold;
+        p.appendChild(strong);
+        p.appendChild(document.createTextNode(' '));
+      }
+      // never innerHTML: some of this is visitor input echoed back
+      p.appendChild(document.createTextNode(text));
+      return p;
+    }
+
+    function linkRow(links) {
+      var row = document.createElement('div');
+      row.className = 'btn-row';
+      links.forEach(function (a) {
+        var link = document.createElement('a');
+        link.className = a.cls;
+        link.href = a.href;
+        link.textContent = a.text;
+        if (a.blank) { link.target = '_blank'; link.rel = 'noopener'; }
+        row.appendChild(link);
+      });
+      return row;
+    }
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+      if (sending) return;
       if (!form.reportValidity()) return;
 
       var msg = buildMessage(form);
@@ -346,44 +402,63 @@
                  '?subject=' + encodeURIComponent(subject + ' — ' + SITE.name) +
                  '&body=' + encodeURIComponent(msg);
 
-      if (!status) { window.location.href = wa; return; }
+      var btn = form.querySelector('[type="submit"]');
+      var btnText = btn ? btn.textContent : '';
 
-      // built as DOM nodes rather than an HTML string: the message is visitor
-      // input, and it should never be able to reach an HTML parser
-      // (add/remove, not className= — that would wipe the authored field--full
-      // and collapse this block into one column of the two-column form grid)
-      status.classList.remove('form__status--err');
-      status.classList.add('form__status', 'form__status--ok', 'is-shown');
-      status.textContent = '';
+      /* No fetch (or no status area to report into) means no backend to talk
+         to — hand the visitor the WhatsApp/mail route straight away. */
+      if (!window.fetch || !status) {
+        if (!status) { window.location.href = wa; return; }
+        return offerFallback('We konden het formulier niet versturen. Stuur je ' +
+          'aanvraag even op een van deze manieren — dan pakken we het meteen op.');
+      }
 
-      var p = document.createElement('p');
-      p.style.margin = '0 0 12px';
-      var strong = document.createElement('strong');
-      strong.textContent = 'Bijna klaar.';
-      p.appendChild(strong);
-      p.appendChild(document.createTextNode(
-        ' Kies hoe je je aanvraag verstuurt — we bevestigen zo snel mogelijk.'));
+      function offerFallback(text) {
+        setStatus('err', function (el) {
+          el.appendChild(para(text, 'Versturen lukte niet.'));
+          el.appendChild(linkRow([
+            { cls: 'btn btn--primary btn--sm', href: wa, text: 'Via WhatsApp', blank: true },
+            { cls: 'btn btn--ghost btn--sm', href: mail, text: 'Via e-mail' },
+            { cls: 'btn btn--ghost btn--sm', href: 'tel:' + SITE.phoneIntl, text: 'Bel ' + SITE.phone }
+          ]));
+        });
+      }
 
-      var row = document.createElement('div');
-      row.className = 'btn-row';
-      [
-        { cls: 'btn btn--primary btn--sm', href: wa, text: 'Via WhatsApp', blank: true },
-        { cls: 'btn btn--ghost btn--sm', href: mail, text: 'Via e-mail' },
-        { cls: 'btn btn--ghost btn--sm', href: 'tel:' + SITE.phoneIntl, text: 'Bel ' + SITE.phone }
-      ].forEach(function (a) {
-        var link = document.createElement('a');
-        link.className = a.cls;
-        link.href = a.href;
-        link.textContent = a.text;
-        if (a.blank) { link.target = '_blank'; link.rel = 'noopener'; }
-        row.appendChild(link);
+      sending = true;
+      if (btn) { btn.disabled = true; btn.textContent = 'Versturen…'; }
+
+      var pot = form.elements.website;
+
+      fetch('/api/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: subject,
+          fields: collectFields(form),
+          website: pot ? pot.value : ''
+        })
+      }).then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (data) {
+          if (!r.ok) throw new Error(data.error || 'Versturen mislukt');
+          return data;
+        });
+      }).then(function () {
+        form.reset();
+        setStatus('ok', function (el) {
+          el.appendChild(para('Je bericht staat bij ons in de inbox — we reageren zo snel ' +
+            'mogelijk. Liever direct iemand spreken?', 'Verstuurd!'));
+          el.appendChild(linkRow([
+            { cls: 'btn btn--ghost btn--sm', href: 'tel:' + SITE.phoneIntl, text: 'Bel ' + SITE.phone },
+            { cls: 'btn btn--ghost btn--sm', href: 'https://wa.me/' + SITE.whatsapp, text: 'WhatsApp', blank: true }
+          ]));
+        });
+      }).catch(function () {
+        offerFallback('We konden je bericht niet bij ons krijgen. Stuur het even op een ' +
+          'van deze manieren — dan pakken we het meteen op.');
+      }).then(function () {
+        sending = false;
+        if (btn) { btn.disabled = false; btn.textContent = btnText; }
       });
-
-      status.appendChild(p);
-      status.appendChild(row);
-      status.setAttribute('tabindex', '-1');
-      status.focus();
-      status.scrollIntoView({ block: 'center', behavior: reduceMotion ? 'auto' : 'smooth' });
     });
   });
 
