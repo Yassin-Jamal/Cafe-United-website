@@ -441,8 +441,15 @@
           website: pot ? pot.value : ''
         })
       }).then(function (r) {
-        return r.json().catch(function () { return {}; }).then(function (data) {
-          if (!r.ok) throw new Error(data.error || 'Versturen mislukt');
+        return r.text().then(function (raw) {
+          var data = {};
+          try { data = JSON.parse(raw); } catch (e) { /* not JSON — see log below */ }
+          if (!r.ok) {
+            // The visitor gets a friendly line; this is for whoever debugs it.
+            console.error('POST /api/send faalde —', r.status, r.statusText,
+                          '· antwoord:', raw.slice(0, 300));
+            throw new Error(data.error || ('HTTP ' + r.status));
+          }
           return data;
         });
       }).then(function () {
@@ -455,7 +462,8 @@
             { cls: 'btn btn--ghost btn--sm', href: 'https://wa.me/' + SITE.whatsapp, text: 'WhatsApp', blank: true }
           ]));
         });
-      }).catch(function () {
+      }).catch(function (err) {
+        console.error('Formulier versturen mislukt:', err && err.message);
         offerFallback('We konden je bericht niet bij ons krijgen. Stuur het even op een ' +
           'van deze manieren — dan pakken we het meteen op.');
       }).then(function () {
