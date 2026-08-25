@@ -324,6 +324,15 @@ a { color: var(--green-deep); }
   /* not --orange-deep: at 11.5px bold this counts as small text, and
      #A85210 on --orange-soft is only 4.05:1. #8F4409 takes it to 5.3:1. */
   color: #8F4409; margin-bottom: 12px; align-self: flex-start; }
+/* Green rather than orange, so a one-off reads differently from the weekly tags.
+   #2E5218 on --green-soft is 8.1:1, well clear at this size. */
+.tag--accent { background: var(--green-soft); color: var(--green-dark); }
+
+/* A dated one-off: lifted off the page so it outranks the weekly cards. */
+.ecard--featured { border-color: var(--green-mid); box-shadow: var(--shadow-lg); }
+.ecard--featured .ecard__top { background: var(--green-deep); border-bottom-color: var(--green-deep); }
+.ecard--featured .ecard__day { color: #fff; }
+.ecard--featured .ecard__time { color: rgba(255,255,255,.85); font-weight: 600; }
 
 /* ---------- 11. Opening hours ---------- */
 .hours { width: 100%; border-collapse: collapse; font-size: .98rem; }
