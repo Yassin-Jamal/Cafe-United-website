@@ -309,9 +309,15 @@ a { color: var(--green-deep); }
 .ecard__body { padding: 20px 22px 24px; display: flex; flex-direction: column; flex: 1; }
 .ecard__body h3 { font-size: 1.18rem; margin-bottom: .35em; }
 .ecard__body p { font-size: .93rem; color: var(--ink-soft); flex: 1; }
-/* One recurring night, so the card sits centred instead of in a three-up grid. */
+/* Only a couple of recurring nights, so the cards sit centred rather than
+   stretched across a three-up grid. */
 .ecard-solo { max-width: 420px; margin-inline: auto; }
-.ecard-solo .btn-row { margin-top: 1.2em; }
+.ecard-duo { display: grid; gap: clamp(16px, 2.4vw, 26px);
+  grid-template-columns: repeat(2, 1fr); max-width: 860px; margin-inline: auto; }
+@media (max-width: 720px) {
+  .ecard-duo { grid-template-columns: 1fr; max-width: 420px; }
+}
+.ecard-solo .btn-row, .ecard-duo .btn-row { margin-top: 1.2em; }
 .tag { display: inline-block; font-size: .72rem; font-weight: 800; letter-spacing: .1em;
   text-transform: uppercase; padding: 4px 10px; border-radius: 999px;
   background: var(--orange-soft);

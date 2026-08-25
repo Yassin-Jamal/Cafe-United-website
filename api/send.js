@@ -98,7 +98,7 @@ module.exports = async function handler(req, res) {
     </tr>`).join('')}
   </table>
   <p style="margin:22px 0 0;font-size:13px;color:#5A6650">
-    Verstuurd via het formulier op cafeunited.nl</p>
+    Verstuurd via het formulier op cafe-united.com</p>
 </div>`;
 
   try {
