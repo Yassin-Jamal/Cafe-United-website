@@ -393,11 +393,11 @@ a { color: var(--green-deep); }
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
           mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
 .food-strip__track { display: flex; width: max-content;
-  animation: food-scroll 22s linear infinite; }
+  animation: food-scroll 26s linear infinite; }
 .food-strip:hover .food-strip__track { animation-play-state: paused; }
 .food-strip__set { display: flex; gap: 14px; margin: 0 14px 0 0; padding: 0; list-style: none; }
 .food-strip__set li { flex: none; }
-.food-strip img { display: block; height: clamp(120px, 17vw, 170px); width: auto;
+.food-strip img { display: block; height: clamp(150px, 21vw, 220px); width: auto;
   border-radius: var(--radius-s); box-shadow: var(--shadow); }
 
 @keyframes food-scroll {
