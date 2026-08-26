@@ -383,6 +383,35 @@ a { color: var(--green-deep); }
 .menu-note p + p { margin-top: .6em; }
 .menu-note .btn-row { margin-top: 1.4em; }
 
+/* Endless right-to-left band of dishes under the kitchen panel. The track holds
+   four identical sets, so shifting it exactly one set's width (25%) and
+   restarting lands on a pixel-identical frame and the jump is invisible.
+   Four rather than two: after the shift the remainder still has to fill the
+   full width, or the right-hand side runs empty before the loop restarts. */
+.food-strip { margin-top: clamp(28px, 4vw, 44px); overflow: hidden;
+  /* fade both ends so photos enter and leave instead of being cut off */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.food-strip__track { display: flex; width: max-content;
+  animation: food-scroll 22s linear infinite; }
+.food-strip:hover .food-strip__track { animation-play-state: paused; }
+.food-strip__set { display: flex; gap: 14px; margin: 0 14px 0 0; padding: 0; list-style: none; }
+.food-strip__set li { flex: none; }
+.food-strip img { display: block; height: clamp(120px, 17vw, 170px); width: auto;
+  border-radius: var(--radius-s); box-shadow: var(--shadow); }
+
+@keyframes food-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-25%, 0, 0); }   /* one set of four */
+}
+
+/* No motion: park the band and let it be scrolled by hand instead. */
+@media (prefers-reduced-motion: reduce) {
+  .food-strip { overflow-x: auto; }
+  .food-strip__track { animation: none; }
+  .food-strip__set[aria-hidden="true"] { display: none; }
+}
+
 /* Kitchen closes half an hour before the bar does — called out, not buried. */
 .kitchen-note { display: inline-block; max-width: 52ch; margin-inline: auto;
   background: var(--orange-soft); border: 1px dashed var(--orange);
