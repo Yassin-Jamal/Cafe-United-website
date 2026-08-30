@@ -23,7 +23,7 @@
   /* Opening hours, indexed by JS getDay() (0 = Sunday).
      Minutes from midnight; a close past 1440 runs into the next day. */
   var HOURS = [
-    { open: 11 * 60, close: 24 * 60 + 60 },   // zondag    11:00 - 01:00
+    { open: 15 * 60, close: 24 * 60 + 60 },   // zondag    15:00 - 01:00
     null,                                      // maandag   gesloten
     { open: 15 * 60, close: 24 * 60 + 60 },   // dinsdag   15:00 - 01:00
     { open: 15 * 60, close: 24 * 60 + 60 },   // woensdag  15:00 - 01:00

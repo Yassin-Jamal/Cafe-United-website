@@ -383,6 +383,16 @@ a { color: var(--green-deep); }
 .menu-note p + p { margin-top: .6em; }
 .menu-note .btn-row { margin-top: 1.4em; }
 
+/* The printed menu card, shown as an image. Capped well below its own width so
+   it reads as a card on the page rather than a scan filling the screen; the
+   link opens the full-size file for anyone who wants to zoom in. */
+.menucard { margin: clamp(28px, 4vw, 44px) auto 0; max-width: 620px; }
+.menucard a { display: block; border-radius: var(--radius); overflow: hidden;
+  box-shadow: var(--shadow-lg); transition: transform .3s var(--ease); }
+.menucard a:hover { transform: translateY(-4px); }
+.menucard img { display: block; width: 100%; height: auto; }
+.menucard figcaption { margin-top: 14px; font-size: .88rem; }
+
 /* Endless right-to-left band of dishes under the kitchen panel. The track holds
    four identical sets, so shifting it exactly one set's width (25%) and
    restarting lands on a pixel-identical frame and the jump is invisible.
