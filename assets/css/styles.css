@@ -383,6 +383,16 @@ a { color: var(--green-deep); }
 .menu-note p + p { margin-top: .6em; }
 .menu-note .btn-row { margin-top: 1.4em; }
 
+/* Points from the daily-changing kitchen down to the fixed card further along
+   the page. The chevron nudges down on hover, so it reads as "keep going". */
+.jump-link { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px;
+  font-family: var(--ff-display); font-weight: 500; font-size: .95rem;
+  color: var(--green-deep); text-decoration: none;
+  border-bottom: 1px solid rgba(62, 107, 34, .35); padding-bottom: 2px; }
+.jump-link:hover { color: var(--orange-deep); border-bottom-color: var(--orange); }
+.jump-link svg { width: 17px; height: 17px; transition: transform .25s var(--ease); }
+.jump-link:hover svg { transform: translateY(3px); }
+
 /* The printed menu card, shown as an image. Capped well below its own width so
    it reads as a card on the page rather than a scan filling the screen; the
    link opens the full-size file for anyone who wants to zoom in. */
