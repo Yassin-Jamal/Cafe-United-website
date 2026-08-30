@@ -309,30 +309,31 @@ a { color: var(--green-deep); }
 .ecard__body { padding: 20px 22px 24px; display: flex; flex-direction: column; flex: 1; }
 .ecard__body h3 { font-size: 1.18rem; margin-bottom: .35em; }
 .ecard__body p { font-size: .93rem; color: var(--ink-soft); flex: 1; }
-/* Only a couple of recurring nights, so the cards sit centred rather than
+/* A handful of nights at most, so the cards sit centred rather than
    stretched across a three-up grid. */
-.ecard-solo { max-width: 420px; margin-inline: auto; }
+.ecard-solo { max-width: 460px; margin-inline: auto; }
 .ecard-duo { display: grid; gap: clamp(16px, 2.4vw, 26px);
   grid-template-columns: repeat(2, 1fr); max-width: 860px; margin-inline: auto; }
 @media (max-width: 720px) {
   .ecard-duo { grid-template-columns: 1fr; max-width: 420px; }
 }
 .ecard-solo .btn-row, .ecard-duo .btn-row { margin-top: 1.2em; }
+
+/* Announced but not scheduled: lifted off the page so it outranks the weekly
+   cards, and the top bar carries "date to follow" where a date would go. */
+.ecard--featured { border-color: var(--green-mid); box-shadow: var(--shadow-lg); }
+.ecard--featured .ecard__top { background: var(--green-deep); border-bottom-color: var(--green-deep); }
+.ecard--featured .ecard__day { color: #fff; }
+.ecard--featured .ecard__time { color: rgba(255,255,255,.85); font-weight: 600; }
 .tag { display: inline-block; font-size: .72rem; font-weight: 800; letter-spacing: .1em;
   text-transform: uppercase; padding: 4px 10px; border-radius: 999px;
   background: var(--orange-soft);
   /* not --orange-deep: at 11.5px bold this counts as small text, and
      #A85210 on --orange-soft is only 4.05:1. #8F4409 takes it to 5.3:1. */
   color: #8F4409; margin-bottom: 12px; align-self: flex-start; }
-/* Green rather than orange, so a one-off reads differently from the weekly tags.
-   #2E5218 on --green-soft is 8.1:1, well clear at this size. */
+/* Green rather than orange, so what is coming up reads differently from the
+   weekly tags. #2E5218 on --green-soft is 8.1:1, well clear at this size. */
 .tag--accent { background: var(--green-soft); color: var(--green-dark); }
-
-/* A dated one-off: lifted off the page so it outranks the weekly cards. */
-.ecard--featured { border-color: var(--green-mid); box-shadow: var(--shadow-lg); }
-.ecard--featured .ecard__top { background: var(--green-deep); border-bottom-color: var(--green-deep); }
-.ecard--featured .ecard__day { color: #fff; }
-.ecard--featured .ecard__time { color: rgba(255,255,255,.85); font-weight: 600; }
 
 /* ---------- 11. Opening hours ---------- */
 .hours { width: 100%; border-collapse: collapse; font-size: .98rem; }
