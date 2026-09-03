@@ -515,6 +515,11 @@ a { color: var(--green-deep); }
 .footer-hours dt { color: rgba(255,255,255,.88); }
 .footer-hours dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
 .footer-kitchen { margin: 12px 0 0; font-size: .85rem; color: rgba(255,255,255,.78); }
+/* Parking comes up constantly, so it sits in every footer under the address. */
+.footer-parking { margin: 14px 0 0; font-size: .85rem; color: rgba(255,255,255,.78);
+  line-height: 1.65; }
+.footer-parking strong { color: rgba(255,255,255,.95); }
+.footer-parking a { color: #fff; }
 
 .site-footer__bar { position: relative; z-index: 2; border-top: 1px solid rgba(255,255,255,.18);
   padding-block: 15px; }
