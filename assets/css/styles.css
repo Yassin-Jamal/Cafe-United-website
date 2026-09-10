@@ -433,6 +433,20 @@ a { color: var(--green-deep); }
   .food-strip__set[aria-hidden="true"] { display: none; }
 }
 
+/* Temporary kitchen hours (holiday). Rendered by main.js only inside its date
+   window, so it is absent the rest of the year. */
+.temp-hours { margin: 1.6em auto 0; max-width: 44ch; text-align: left;
+  background: var(--white); border: 2px solid var(--orange);
+  border-radius: var(--radius-s); padding: 18px 22px; box-shadow: var(--shadow); }
+.temp-hours[hidden] { display: none; }
+.temp-hours__head { margin: 0 0 14px; font-size: .93rem; color: var(--ink); }
+.temp-hours__head strong { color: var(--orange-deep); }
+.temp-hours__list { display: grid; grid-template-columns: auto auto; gap: 6px 18px;
+  margin: 0; font-size: .93rem; }
+.temp-hours__list dt { color: var(--ink-soft); }
+.temp-hours__list dd { margin: 0; text-align: right; font-weight: 600;
+  font-variant-numeric: tabular-nums; }
+
 /* Kitchen closes half an hour before the bar does — called out, not buried. */
 .kitchen-note { display: inline-block; max-width: 52ch; margin-inline: auto;
   background: var(--orange-soft); border: 1px dashed var(--orange);

@@ -107,6 +107,105 @@
   markToday();
   setInterval(renderOpenBadges, 60000);
 
+  /* ------------------------------------------------------------------
+     KITCHEN CLOSING TIMES
+     The bar's hours live in HOURS above; the kitchen shuts earlier and has
+     its own table. KITCHEN_TEMP overrides it for a dated stretch (holiday,
+     staffing) — it expires by date, so nothing has to be edited back out
+     afterwards. To end it early, set `to` to a past date; to remove it for
+     good, set KITCHEN_TEMP to null.
+     ------------------------------------------------------------------ */
+  var KITCHEN = [
+    24 * 60 + 30,   // zondag    00:30
+    null,           // maandag   gesloten
+    24 * 60 + 30,   // dinsdag   00:30
+    24 * 60 + 30,   // woensdag  00:30
+    24 * 60 + 30,   // donderdag 00:30
+    24 * 60 + 90,   // vrijdag   01:30
+    24 * 60 + 90    // zaterdag  01:30
+  ];
+
+  var KITCHEN_TEMP = {
+    from:   '2026-09-08',
+    to:     '2026-09-20',          // t/m deze dag
+    label:  '8 t/m 20 september',
+    reason: 'vakantie',
+    closes: [
+      23 * 60,        // zondag    23:00
+      null,           // maandag   gesloten
+      23 * 60,        // dinsdag   23:00
+      23 * 60,        // woensdag  23:00
+      24 * 60,        // donderdag 00:00
+      24 * 60 + 90,   // vrijdag   01:30
+      24 * 60 + 90    // zaterdag  01:30
+    ]
+  };
+
+  /* Compared as YYYY-MM-DD strings in local time: Date parsing of a bare date
+     is UTC and would flip the window a day either side of midnight. */
+  function todayKey(now) {
+    now = now || new Date();
+    return now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+  }
+
+  function tempActive(now) {
+    if (!KITCHEN_TEMP) return false;
+    var k = todayKey(now);
+    return k >= KITCHEN_TEMP.from && k <= KITCHEN_TEMP.to;
+  }
+
+  /* One sentence covering the week, so the short lines scattered over the site
+     all say the same thing without repeating the wording in seven files. */
+  function kitchenSentence(closes) {
+    var weekday = closes[2], weekend = closes[5], thursday = closes[4];
+    if (weekday === weekend && weekday === thursday) return 'open tot ' + fmt(weekday);
+    if (thursday === weekday) {
+      return 'open tot ' + fmt(weekday) + ', en op vrijdag en zaterdag tot ' + fmt(weekend);
+    }
+    return 'open tot ' + fmt(weekday) + ', op donderdag tot ' + fmt(thursday) +
+           ' en op vrijdag en zaterdag tot ' + fmt(weekend);
+  }
+
+  function renderKitchen() {
+    var active = tempActive();
+    var closes = active ? KITCHEN_TEMP.closes : KITCHEN;
+
+    document.querySelectorAll('[data-kitchen-line]').forEach(function (el) {
+      el.textContent = kitchenSentence(closes);
+    });
+
+    document.querySelectorAll('[data-kitchen-temp]').forEach(function (box) {
+      if (!active) { box.hidden = true; return; }
+      box.hidden = false;
+      if (box.dataset.filled) return;
+      box.dataset.filled = '1';
+
+      var h = document.createElement('p');
+      h.className = 'temp-hours__head';
+      var strong = document.createElement('strong');
+      strong.textContent = 'Let op: aangepaste keukentijden';
+      h.appendChild(strong);
+      h.appendChild(document.createTextNode(
+        ' \u00b7 ' + KITCHEN_TEMP.label + '. Wegens ' + KITCHEN_TEMP.reason +
+        ' sluit de keuken tijdelijk eerder. De bar blijft gewoon open op de normale tijden.'));
+      box.appendChild(h);
+
+      var dl = document.createElement('dl');
+      dl.className = 'temp-hours__list';
+      [2, 3, 4, 5, 6, 0].forEach(function (d) {          // dinsdag t/m zondag
+        if (closes[d] === null) return;
+        var dt = document.createElement('dt');
+        dt.textContent = DAY_NAMES[d].charAt(0).toUpperCase() + DAY_NAMES[d].slice(1);
+        var dd = document.createElement('dd');
+        dd.textContent = fmt(HOURS[d].open) + ' \u2013 ' + fmt(closes[d]);
+        dl.appendChild(dt); dl.appendChild(dd);
+      });
+      box.appendChild(dl);
+    });
+  }
+
+  renderKitchen();
+
   var yearEl = document.querySelectorAll('[data-year]');
   yearEl.forEach(function (e) { e.textContent = new Date().getFullYear(); });
 
