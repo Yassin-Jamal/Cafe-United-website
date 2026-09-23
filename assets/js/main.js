@@ -206,6 +206,13 @@
 
   renderKitchen();
 
+  /* Dated announcements (a quiz night, a one-off party) carry data-until with
+     the last day they are worth showing, and drop off the page by themselves
+     the day after. Saves having to remember to come back and delete them. */
+  document.querySelectorAll('[data-until]').forEach(function (el) {
+    if (todayKey() > el.getAttribute('data-until')) el.remove();
+  });
+
   var yearEl = document.querySelectorAll('[data-year]');
   yearEl.forEach(function (e) { e.textContent = new Date().getFullYear(); });
 
