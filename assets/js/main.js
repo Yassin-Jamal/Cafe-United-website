@@ -24,7 +24,7 @@
      Minutes from midnight; a close past 1440 runs into the next day. */
   var HOURS = [
     { open: 15 * 60, close: 24 * 60 + 60 },   // zondag    15:00 - 01:00
-    null,                                      // maandag   gesloten
+    { open: 15 * 60, close: 24 * 60 + 60 },   // maandag   15:00 - 01:00
     { open: 15 * 60, close: 24 * 60 + 60 },   // dinsdag   15:00 - 01:00
     { open: 15 * 60, close: 24 * 60 + 60 },   // woensdag  15:00 - 01:00
     { open: 15 * 60, close: 24 * 60 + 60 },   // donderdag 15:00 - 01:00
@@ -117,7 +117,7 @@
      ------------------------------------------------------------------ */
   var KITCHEN = [
     24 * 60 + 30,   // zondag    00:30
-    null,           // maandag   gesloten
+    24 * 60 + 30,   // maandag   00:30
     24 * 60 + 30,   // dinsdag   00:30
     24 * 60 + 30,   // woensdag  00:30
     24 * 60 + 30,   // donderdag 00:30
@@ -132,7 +132,7 @@
     reason: 'vakantie',
     closes: [
       23 * 60,        // zondag    23:00
-      null,           // maandag   gesloten
+      23 * 60,        // maandag   23:00
       23 * 60,        // dinsdag   23:00
       23 * 60,        // woensdag  23:00
       24 * 60,        // donderdag 00:00
@@ -192,7 +192,7 @@
 
       var dl = document.createElement('dl');
       dl.className = 'temp-hours__list';
-      [2, 3, 4, 5, 6, 0].forEach(function (d) {          // dinsdag t/m zondag
+      [1, 2, 3, 4, 5, 6, 0].forEach(function (d) {       // maandag t/m zondag
         if (closes[d] === null) return;
         var dt = document.createElement('dt');
         dt.textContent = DAY_NAMES[d].charAt(0).toUpperCase() + DAY_NAMES[d].slice(1);
@@ -682,7 +682,10 @@
       if (parts.length !== 3) { warn.textContent = ''; return; }
       // construct locally; new Date('YYYY-MM-DD') parses as UTC and can slip a day
       var d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-      warn.textContent = HOURS[d.getDay()] ? '' : 'Let op: op maandag zijn we gesloten.';
+      // reads the day out of HOURS rather than naming one, so it stays right
+      // if a closing day is ever added back or moved
+      warn.textContent = HOURS[d.getDay()]
+        ? '' : 'Let op: op ' + DAY_NAMES[d.getDay()] + ' zijn we gesloten.';
     });
   }
 
