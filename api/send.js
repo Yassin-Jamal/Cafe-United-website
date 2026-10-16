@@ -9,9 +9,9 @@
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
 
 const TO      = process.env.MAIL_TO   || 'cafeunitedrotterdam@gmail.com';
-// Sends from the verified mail.permaflare.com subdomain. Replies do not come
+// Sends from the verified mail.permyron.com subdomain. Replies do not come
 // back here — reply_to points at the visitor, see below.
-const FROM    = process.env.MAIL_FROM || 'Café United <forms@mail.permaflare.com>';
+const FROM    = process.env.MAIL_FROM || 'Café United <forms@mail.permyron.com>';
 
 const MAX_FIELDS = 40;
 const MAX_LEN    = 2000;
