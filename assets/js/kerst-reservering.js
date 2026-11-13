@@ -72,18 +72,26 @@
         id: 'kerstmenu',
         datums: ['2026-12-25', '2026-12-26'],
         naam: 'Christmas Dinner',
-        tekst: 'Voorgerechten: sùlt, ayaka en Christmas glazed ham. Hoofdgerecht naar keuze: ' +
-               'garlic shrimp & salmon, roasted chicken met béchamelsaus, tenderloin steak met ' +
-               'champignonsaus of stewed beef. Dessert: flan of stained glass cake.',
+        /* Per taal: de omschrijving en de bijbehorende kaart. De taalknop
+           bovenin de popup schakelt hiertussen.
+           >>> NA TE LEZEN <<< de Papiamentse tekst is overgenomen van de
+           kaart; laat iemand die de taal spreekt er even naar kijken. */
+        talen: {
+          nl: {
+            tekst: 'Voorgerechten: sùlt, ayaka en Christmas glazed ham. Hoofdgerecht naar ' +
+                   'keuze: garlic shrimp & salmon, roasted chicken met béchamelsaus, ' +
+                   'tenderloin steak met champignonsaus of stewed beef. ' +
+                   'Dessert: flan of stained glass cake.',
+            kaart: 'assets/img/kerstmenu.jpg'
+          },
+          pap: {
+            tekst: 'Promé plato: sult, ayaka i ham di pasku. Plato prinsipal (skohe ùn): ' +
+                   'garlic shrimp & salmon, galiña na fornu ku bechamel saixe, ' +
+                   'lomito ku mushroom sauce of karni stobá. Dèsert: kesio of bolo di glas.',
+            kaart: 'assets/img/kerstmenu-pap.jpg'
+          }
+        },
         afbeelding: 'assets/img/kerstmenu.jpg',
-        /* Dezelfde kaart in meerdere talen. De eerste is de afbeelding die
-           in de popup staat; alle kaarten krijgen een eigen link.
-           >>> IN TE VULLEN <<< de Papiamentse kaart is er nog niet. Zet het
-           bestand in assets/img/ en haal de // weg bij de regel eronder. */
-        kaarten: [
-          { taal: 'Nederlands', url: 'assets/img/kerstmenu.jpg' }
-          // , { taal: 'Papiamentu', url: 'assets/img/kerstmenu-pap.jpg' }
-        ],
         prijs: 55,
         prijsKind: 15
       },
@@ -183,13 +191,32 @@
   }
   controleMenus();
 
-  /* Alle kaarten van een menu, ongeacht of ze als `kaarten` of als los
-     `kaartUrl` zijn ingesteld. */
-  function menuKaarten(menu) {
-    if (!menu) return [];
-    if (menu.kaarten && menu.kaarten.length) return menu.kaarten;
-    if (menu.kaartUrl) return [{ taal: '', url: menu.kaartUrl }];
-    return [];
+  var TAALNAAM = { nl: 'Nederlands', pap: 'Papiamentu' };
+
+  /* Welke talen heeft dit menu? Leeg = geen vertaling ingesteld. */
+  function menuTalen(menu) {
+    if (!menu || !menu.talen) return [];
+    return Object.keys(menu.talen);
+  }
+
+  /* De omschrijving in de gekozen taal, met terugval op wat er wél is. */
+  function menuTekst(menu) {
+    if (!menu) return '';
+    if (menu.talen) {
+      var t = menu.talen[staat.taal] || menu.talen[menuTalen(menu)[0]];
+      if (t && t.tekst) return t.tekst;
+    }
+    return menu.tekst || '';
+  }
+
+  /* De kaart in de gekozen taal; anders de eerste die er is. */
+  function menuKaart(menu) {
+    if (!menu) return null;
+    if (menu.talen) {
+      var t = menu.talen[staat.taal] || menu.talen[menuTalen(menu)[0]];
+      if (t && t.kaart) return t.kaart;
+    }
+    return menu.kaartUrl || menu.afbeelding || null;
   }
 
   function menuVoorDatum(sleutel) {
@@ -335,7 +362,11 @@
     '  <div class="kerst-kop">' +
     '    <div>' +
     '      <h2 id="kerst-titel">Kerstdiner reserveren</h2>' +
-    '      <p>23 t/m 27 december · Café United</p>' +
+    '      <p>23 t/m 27 december</p>' +
+    '    </div>' +
+    '    <div class="kerst-taal" role="group" aria-label="Taal van het menu">' +
+    '      <button type="button" data-taal="nl" aria-pressed="true">NL</button>' +
+    '      <button type="button" data-taal="pap" aria-pressed="false">PAP</button>' +
     '    </div>' +
     '    <button class="kerst-kop__sluit" type="button" data-sluit aria-label="Sluiten">' +
           ICOON_KRUIS + '</button>' +
@@ -561,19 +592,9 @@
 
     var menu = menuVoorDatum(staat.datum);
 
-    /* Alleen vertellen over talen die er echt zijn: een link naar een kaart
-       die niet bestaat is erger dan hem niet noemen. */
-    var kaartenNu = menuKaarten(menu).filter(function (k) { return k.taal; });
-    if (kaartenNu.length > 1) {
-      var talen = kaartenNu.map(function (k) { return k.taal; });
-      vakMenu.appendChild(el('p', 'kerst-menu-uitleg',
-        'Tik op de kaart om hem groot te bekijken — het is hetzelfde menu, ' +
-        'en je kunt kiezen tussen ' + talen.slice(0, -1).join(', ') + ' en ' +
-        talen[talen.length - 1] + '.'));
-    } else if (kaartenNu.length === 1 || menuKaarten(menu).length === 1) {
-      vakMenu.appendChild(el('p', 'kerst-menu-uitleg',
-        'Tik op de kaart om hem groot te bekijken.'));
-    }
+    vakMenu.appendChild(el('p', 'kerst-menu-uitleg', staat.taal === 'pap'
+      ? 'Primi riba e karchi pa miré grandi.'
+      : 'Tik op de kaart om hem groot te bekijken.'));
 
     var lijst = el('div', 'kerst-menus');
 
@@ -586,32 +607,37 @@
 
     /* Precies één menu per datum, dus niets te kiezen: de kaart toont wat
        er die dag op tafel komt. */
+    /* De kaart in de gekozen taal, als aanklikbare afbeelding. */
+    var kaartUrlNu = menuKaart(menu);
     var kaart = el('div', 'kerst-menu');
+    var beeld = kaartUrlNu
+      ? el('a', 'kerst-menu__beeld') : el('span', 'kerst-menu__beeld');
+    if (kaartUrlNu) {
+      beeld.href = kaartUrlNu; beeld.target = '_blank'; beeld.rel = 'noopener';
+      beeld.setAttribute('aria-label', 'De kerstkaart op ware grootte openen');
+    }
     var img = el('img');
-    img.src = menu.afbeelding; img.alt = ''; img.loading = 'lazy';
-    kaart.appendChild(img);
+    img.src = kaartUrlNu || menu.afbeelding; img.alt = ''; img.loading = 'lazy';
+    beeld.appendChild(img);
+    kaart.appendChild(beeld);
 
     var tekstVak = el('div');
     tekstVak.appendChild(el('div', 'kerst-menu__dag',
       menu.datums.map(datumTekst).join(' · ')));
     tekstVak.appendChild(el('div', 'kerst-menu__naam', menu.naam));
-    tekstVak.appendChild(el('p', 'kerst-menu__tekst', menu.tekst));
+    tekstVak.appendChild(el('p', 'kerst-menu__tekst', menuTekst(menu)));
     if (menu.prijs != null) {
-      var prijs = euro(menu.prijs) + ' p.p.';
-      if (menu.prijsKind != null) prijs += ' · ' + euro(menu.prijsKind) + ' per kind';
+      var prijs = euro(menu.prijs) + (staat.taal === 'pap' ? ' pa persona' : ' p.p.');
+      if (menu.prijsKind != null) {
+        prijs += ' · ' + euro(menu.prijsKind) + (staat.taal === 'pap' ? ' pa mucha' : ' per kind');
+      }
       tekstVak.appendChild(el('div', 'kerst-menu__prijs', prijs));
     }
-    /* Eén link per taal waarin de kaart bestaat. */
-    var kaarten = menuKaarten(menu);
-    if (kaarten.length) {
-      var rijLinks = el('div', 'kerst-menu__links');
-      kaarten.forEach(function (k) {
-        var a = el('a', 'kerst-menu__link',
-          kaarten.length === 1 ? 'Bekijk de kaart' : 'Kaart in ' + k.taal);
-        a.href = k.url; a.target = '_blank'; a.rel = 'noopener';
-        rijLinks.appendChild(a);
-      });
-      tekstVak.appendChild(rijLinks);
+    if (kaartUrlNu) {
+      var a = el('a', 'kerst-menu__link',
+        staat.taal === 'pap' ? 'Wak e karchi' : 'Bekijk de kaart');
+      a.href = kaartUrlNu; a.target = '_blank'; a.rel = 'noopener';
+      tekstVak.appendChild(a);
     }
     if (menu.tiencheck) {
       tekstVak.appendChild(el('span', 'kerst-menu__todo', 'Menugegevens nog invullen'));
@@ -711,21 +737,7 @@
     iO.placeholder = 'Allergieën, keuze hoofdgerecht, een kinderstoel…';
     vO.appendChild(iO);
 
-    var vA = el('div', 'kerst-veld');
-    vA.dataset.veld = 'akkoord';
-    var lab = el('label', 'kerst-akkoord');
-    var chk = el('input'); chk.type = 'checkbox'; chk.id = 'kerst-akkoord';
-    var sp = el('span');
-    sp.appendChild(document.createTextNode('Ik ga akkoord met de '));
-    var a = el('a', null, KERST.privacyLabel);
-    a.href = KERST.privacyUrl; a.target = '_blank'; a.rel = 'noopener';
-    sp.appendChild(a);
-    sp.appendChild(document.createTextNode(' van Café United. '));
-    sp.appendChild(el('span', 'kerst-req', '*'));
-    lab.appendChild(chk); lab.appendChild(sp);
-    vA.appendChild(lab); vA.appendChild(el('span', 'kerst-fout'));
-
-    [vN, vE, vT, vO, vA].forEach(function (v) { wrap.appendChild(v); });
+    [vN, vE, vT, vO].forEach(function (v) { wrap.appendChild(v); });
     vakCont.appendChild(wrap);
   }
 
@@ -744,11 +756,10 @@
       email: (pop.querySelector('#kerst-email') || {}).value || '',
       land: (pop.querySelector('#kerst-land') || {}).value || '',
       telefoon: (pop.querySelector('#kerst-telefoon') || {}).value || '',
-      opmerking: (pop.querySelector('#kerst-opmerking') || {}).value || '',
-      akkoord: !!(pop.querySelector('#kerst-akkoord') || {}).checked
+      opmerking: (pop.querySelector('#kerst-opmerking') || {}).value || ''
     };
     var fouten = 0;
-    ['naam', 'email', 'telefoon', 'akkoord'].forEach(function (k) { zetFout(k, ''); });
+    ['naam', 'email', 'telefoon'].forEach(function (k) { zetFout(k, ''); });
 
     if (!w.naam.trim()) { zetFout('naam', 'Vul je naam in.'); fouten++; }
     if (!w.email.trim()) { zetFout('email', 'Vul je e-mailadres in.'); fouten++; }
@@ -758,7 +769,6 @@
     var cijfers = w.telefoon.replace(/\D/g, '');
     if (!cijfers) { zetFout('telefoon', 'Vul je telefoonnummer in.'); fouten++; }
     else if (cijfers.length < 6) { zetFout('telefoon', 'Dit nummer lijkt te kort.'); fouten++; }
-    if (!w.akkoord) { zetFout('akkoord', 'Je moet hiermee akkoord gaan om te kunnen reserveren.'); fouten++; }
 
     return fouten === 0 ? w : null;
   }
@@ -876,6 +886,18 @@
     });
   }
 
+  /* Taalknop: wisselt de kaart, de omschrijving en de regel eronder. De rest
+     van het formulier blijft Nederlands — dat is wat er gevraagd is. */
+  pop.querySelectorAll('[data-taal]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      staat.taal = b.getAttribute('data-taal');
+      pop.querySelectorAll('[data-taal]').forEach(function (x) {
+        x.setAttribute('aria-pressed', x === b ? 'true' : 'false');
+      });
+      bouwMenus();
+    });
+  });
+
   knopVerstuur.addEventListener('click', verstuur);
   form.addEventListener('submit', function (e) { e.preventDefault(); verstuur(); });
 
@@ -920,6 +942,11 @@
   document.addEventListener('click', function (e) {
     if (pop.hidden) return;
     if (e.target.closest && e.target.closest('[data-kerst-open]')) return;
+    /* Een tijdslot aanklikken bouwt het blok opnieuw op, waardoor de knop uit
+       het document verdwijnt vóór deze regel draait. pop.contains() zegt dan
+       "zat niet in de popup" en de popup ging dicht. Een losgekoppeld element
+       komt per definitie niet van buiten de popup. */
+    if (e.target.isConnected === false) return;
     if (!pop.contains(e.target) && !fab.contains(e.target)) sluiten();
   });
 
@@ -962,8 +989,8 @@
 
       var grid = el('div', 'kerst-band__grid');
       var aK = el('a', 'kerst-band__kaart');
-      var bandKaarten = menuKaarten(kerstMenu);
-      aK.href = (bandKaarten[0] || {}).url || kerstMenu.afbeelding;
+      var bandTalen = menuTalen(kerstMenu);
+      aK.href = menuKaart(kerstMenu) || kerstMenu.afbeelding;
       aK.target = '_blank'; aK.rel = 'noopener';
       aK.setAttribute('aria-label', 'De kerstkaart op ware grootte openen');
       var imgK = el('img');
@@ -987,13 +1014,13 @@
       knopB.addEventListener('click', function () { if (pop.hidden) openen(); });
       rijB.appendChild(knopB);
       /* Eén knop per taal waarin de kaart bestaat. */
-      (bandKaarten.length ? bandKaarten : [{ taal: '', url: kerstMenu.afbeelding }])
-        .forEach(function (k) {
-          var kaartB = el('a', 'btn btn--ghost',
-            bandKaarten.length > 1 ? 'Kaart in ' + k.taal : 'Bekijk de kaart');
-          kaartB.href = k.url; kaartB.target = '_blank'; kaartB.rel = 'noopener';
-          rijB.appendChild(kaartB);
-        });
+      (bandTalen.length ? bandTalen : ['']).forEach(function (code) {
+        var url = code ? kerstMenu.talen[code].kaart : kerstMenu.afbeelding;
+        var kaartB = el('a', 'btn btn--ghost',
+          bandTalen.length > 1 ? 'Kaart in ' + (TAALNAAM[code] || code) : 'Bekijk de kaart');
+        kaartB.href = url; kaartB.target = '_blank'; kaartB.rel = 'noopener';
+        rijB.appendChild(kaartB);
+      });
       tekstB.appendChild(rijB);
       grid.appendChild(tekstB);
 

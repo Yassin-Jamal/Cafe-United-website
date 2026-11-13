@@ -358,3 +358,18 @@
 .kerst-menu-uitleg { margin: -4px 0 10px; font-size: .8rem; color: var(--ink-soft);
   line-height: 1.5; }
 .kerst-menu__links { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 5px; }
+
+/* ---------- Taalknop in de kop ---------- */
+.kerst-taal { display: flex; gap: 3px; margin-left: auto; flex: none;
+  background: rgba(255,255,255,.16); border-radius: 999px; padding: 3px; }
+.kerst-taal button {
+  border: 0; background: transparent; cursor: pointer; color: rgba(255,255,255,.82);
+  font-family: var(--ff-body); font-size: .72rem; font-weight: 800; letter-spacing: .04em;
+  padding: 4px 10px; border-radius: 999px; line-height: 1;
+}
+.kerst-taal button[aria-pressed="true"] { background: #fff; color: var(--kerst-rood-diep); }
+.kerst-taal button:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+/* De sluitknop stond met margin-left:auto rechts; dat doet de taalknop nu. */
+.kerst-kop__sluit { margin-left: 8px; }
+
+.kerst-menu__beeld { display: block; }
