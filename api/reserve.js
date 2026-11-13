@@ -64,7 +64,9 @@ function clean(v) {
 
 const isEmail = (v) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
 const isDatum = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v);
-const isTijd  = (v) => /^\d{2}:\d{2}$/.test(v);
+/* Het tijdslot komt als tekst binnen ("17:00 – 19:30 (Vroege avond)"); we
+   eisen alleen dat er iets staat en knippen het af in clean(). */
+const isShift = (v) => v.length > 0;
 
 function euro(bedrag) {
   return '€ ' + Number(bedrag).toFixed(2).replace('.', ',');
@@ -127,18 +129,21 @@ module.exports = async function handler(req, res) {
   const telefoon = clean(body.telefoon);
   const opmerking= clean(body.opmerking);
   const datum    = clean(body.datum);
-  const tijd     = clean(body.tijd);
+  const shift    = clean(body.shiftTekst);
   const menuNaam = clean(body.menuNaam);
   const personen = Number(body.personen);
+  const kinderen = body.kinderen == null ? 0 : Number(body.kinderen);
   const prijsPP  = body.prijsPP == null ? null : Number(body.prijsPP);
+  const prijsKind= body.prijsKind == null ? null : Number(body.prijsKind);
 
   const fouten = [];
   if (!naam) fouten.push('naam');
   if (!isEmail(email)) fouten.push('e-mailadres');
   if (telefoon.replace(/\D/g, '').length < 6) fouten.push('telefoonnummer');
   if (!Number.isFinite(personen) || personen < 1 || personen > 20) fouten.push('aantal personen');
+  if (!Number.isFinite(kinderen) || kinderen < 0 || kinderen > personen) fouten.push('aantal kinderen');
   if (!isDatum(datum)) fouten.push('datum');
-  if (!isTijd(tijd)) fouten.push('tijd');
+  if (!isShift(shift)) fouten.push('tijdslot');
   if (prijsPP !== null && (!Number.isFinite(prijsPP) || prijsPP < 0)) fouten.push('prijs');
 
   if (fouten.length) {
@@ -146,30 +151,42 @@ module.exports = async function handler(req, res) {
   }
 
   const datumNet = clean(body.datumTekst) || datum;
-  const tijdNet  = tijd + (body.naMiddernacht ? ' (na middernacht)' : '');
-  const totaal   = prijsPP === null ? null : prijsPP * personen;
-  const prijsTxt = prijsPP === null ? 'nog niet bekend' : euro(prijsPP);
-  const totaalTxt= totaal === null ? 'nog niet bekend' : euro(totaal);
+
+  /* Zelf narekenen in plaats van het meegestuurde totaal vertrouwen: dat
+     komt uit de browser en is daar aan te passen. */
+  const kindTarief = prijsKind != null ? prijsKind : prijsPP;
+  const totaal = prijsPP === null
+    ? null : (personen - kinderen) * prijsPP + kinderen * kindTarief;
+  const prijsTxt  = prijsPP === null ? 'nog niet bekend' : euro(prijsPP);
+  const totaalTxt = totaal === null ? 'nog niet bekend' : euro(totaal);
+
+  const wie = kinderen > 0
+    ? `${personen} (${personen - kinderen} volw. + ${kinderen} kind${kinderen === 1 ? '' : 'eren'})`
+    : String(personen);
 
   const rijen = [
     ['Naam', naam],
     ['E-mail', email],
     ['Telefoon', telefoon],
-    ['Aantal personen', String(personen)],
+    ['Aantal personen', wie],
     ['Datum', datumNet],
-    ['Tijd', tijdNet],
+    ['Tijdslot', shift],
     ['Menu', menuNaam || 'nog niet ingesteld'],
-    ['Prijs p.p.', prijsTxt],
-    ['Totaal', totaalTxt]
+    ['Prijs p.p.', prijsTxt]
   ];
+  if (kinderen > 0 && prijsKind != null) rijen.push(['Per kind', euro(prijsKind)]);
+  rijen.push(['Totaal', totaalTxt]);
   if (opmerking) rijen.push(['Opmerking', opmerking]);
+  /* Capaciteit meesturen zodat het team zelf kan tellen — de site houdt
+     niet bij hoeveel plaatsen er al vergeven zijn. */
+  if (body.shiftPlaatsen) rijen.push(['Plaatsen in dit slot', String(Number(body.shiftPlaatsen))]);
 
   const naarZaakText = ['Nieuwe kerstdiner-aanvraag via de website', '']
     .concat(rijen.map((r) => r[0] + ': ' + r[1])).join('\n');
 
   const naarZaakHtml = `<div style="font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#26301D">
   <h2 style="color:#A4161A;margin:0 0 4px">Nieuwe kerstdiner-aanvraag</h2>
-  <p style="margin:0 0 18px;color:#5A6650">${esc(datumNet)} om ${esc(tijdNet)} · ${esc(String(personen))} personen</p>
+  <p style="margin:0 0 18px;color:#5A6650">${esc(datumNet)} · ${esc(shift)} · ${esc(wie)}</p>
   <table cellpadding="0" cellspacing="0" style="border-collapse:collapse">${regelsHtml(rijen)}</table>
   <p style="margin:22px 0 0;font-size:13px;color:#5A6650">
     Beantwoorden gaat rechtstreeks naar ${esc(email)}.</p>
@@ -183,8 +200,8 @@ module.exports = async function handler(req, res) {
     'mogelijk weten of het rondkomt.',
     '',
     'Datum: ' + datumNet,
-    'Tijd: ' + tijdNet,
-    'Aantal personen: ' + personen,
+    'Tijdslot: ' + shift,
+    'Aantal personen: ' + wie,
     'Menu: ' + (menuNaam || 'nog niet ingesteld'),
     'Totaal: ' + totaalTxt,
     '',
@@ -201,8 +218,8 @@ module.exports = async function handler(req, res) {
     mogelijk weten of het rondkomt.</p>
   <table cellpadding="0" cellspacing="0" style="border-collapse:collapse">${regelsHtml([
     ['Datum', datumNet],
-    ['Tijd', tijdNet],
-    ['Aantal personen', String(personen)],
+    ['Tijdslot', shift],
+    ['Aantal personen', wie],
     ['Menu', menuNaam || 'nog niet ingesteld'],
     ['Totaal', totaalTxt]
   ])}</table>

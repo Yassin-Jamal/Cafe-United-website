@@ -1,5 +1,5 @@
 /* ============================================================
-   KERSTDINER — zwevende knop + reserveringspaneel
+   KERST — zwevende knop, hoekpopup en lichte kerstsfeer
    Losstaand van main.js. Alles wat je later wilt wijzigen staat in
    KERST hieronder; daaronder hoef je niets aan te raken.
    ============================================================ */
@@ -8,55 +8,40 @@
 
   /* ------------------------------------------------------------------
      INSTELLINGEN — hier pas je alles aan.
-
-     >>> TE CONTROLEREN / IN TE VULLEN <<<
-     De menunamen, omschrijvingen en prijzen hieronder zijn PLAATSHOUDERS.
-     Er stond nog geen kerstmenu op de site, en die gegevens verzinnen we
-     niet. Zolang `tiencheck: true` op een menu staat, toont de kaart een
-     geel label "nog invullen" en rekent de samenvatting geen totaal uit.
-     Vul naam, omschrijving en prijs in en haal `tiencheck` weg.
      ------------------------------------------------------------------ */
   var KERST = {
     aan: true,
 
-    /* Na deze dag verdwijnt de knop vanzelf van de site. */
+    /* Na deze dag verdwijnen de knop, het lint, het kerstlogo en het
+       kerstblok vanzelf van de site. */
     toonTot: '2026-12-27',
 
-    /* Waar de aanvraag heen gaat. Het endpoint gebruikt dezelfde
-       Resend-instellingen als het gewone contactformulier. */
+    /* Lichte kerstsfeer: lint bovenaan, kerstlogo, blok op de homepage. */
+    sfeer: { lint: true, logo: true, homepageBlok: true },
+
     endpoint: '/api/reserve',
 
-    /* Alleen deze datums zijn te kiezen. */
     datums: ['2026-12-23', '2026-12-24', '2026-12-25', '2026-12-26', '2026-12-27'],
 
     personen: { min: 1, max: 20, start: 2 },
 
-    /* Openingstijden in minuten na middernacht, index = getDay() (0 = zondag).
-       Een sluitingstijd boven 1440 loopt door in de volgende dag. */
-    uren: [
-      { open: 15 * 60, dicht: 24 * 60 + 60 },    // zondag    15:00 - 01:00
-      { open: 15 * 60, dicht: 24 * 60 + 60 },    // maandag   15:00 - 01:00
-      { open: 15 * 60, dicht: 24 * 60 + 60 },    // dinsdag   15:00 - 01:00
-      { open: 15 * 60, dicht: 24 * 60 + 60 },    // woensdag  15:00 - 01:00
-      { open: 15 * 60, dicht: 24 * 60 + 60 },    // donderdag 15:00 - 01:00
-      { open: 15 * 60, dicht: 24 * 60 + 150 },   // vrijdag   15:00 - 02:30
-      { open: 15 * 60, dicht: 24 * 60 + 150 }    // zaterdag  15:00 - 02:30
+    /* Drie shifts van 30 personen = 90 per dag.
+
+       >>> LET OP <<< de site kan NIET bijhouden hoeveel plaatsen er al
+       vergeven zijn: er is geen database, alleen e-mail. `plaatsen` staat
+       hier zodat het aantal in de mail naar de zaak meekomt en jullie zelf
+       kunnen tellen. Wil je dat de site vol-shifts echt dichtzet, dan is
+       daar opslag voor nodig — zie de notitie in de README. */
+    shifts: [
+      { id: 'shift-1', van: '14:00', tot: '16:30', naam: 'Middag',     plaatsen: 30 },
+      { id: 'shift-2', van: '17:00', tot: '19:30', naam: 'Vroege avond', plaatsen: 30 },
+      { id: 'shift-3', van: '20:00', tot: '21:30', naam: 'Late avond',  plaatsen: 30 }
     ],
 
-    /* Reserveringstijden zijn bewust NIET gelijk aan de openingstijden.
-       >>> TE BEVESTIGEN <<< onderstaande waarden zijn een aanname.
-         eersteTijd  — vroegste tijd die te boeken is (null = bij opening)
-         laatsteVoorSluiten — hoeveel minuten vóór sluitingstijd de laatste
-                              tafel nog geboekt kan worden
-         stapMinuten — afstand tussen twee tijden in de lijst */
-    tijden: { eersteTijd: 17 * 60, laatsteVoorSluiten: 90, stapMinuten: 30 },
-
-    /* >>> TE MAKEN <<< er is nog geen privacypagina op de site.
-       Zet hier de juiste URL zodra die er is. */
+    /* >>> TE MAKEN <<< er is nog geen privacypagina op de site. */
     privacyUrl: 'contact.html',
     privacyLabel: 'privacyverklaring en voorwaarden',
 
-    /* Landnummers voor het telefoonveld. */
     landen: [
       { code: '+31',  naam: 'NL +31' },
       { code: '+32',  naam: 'BE +32' },
@@ -71,57 +56,57 @@
     ],
     landStandaard: '+31',
 
-    /* Eén menu per datum. `datums` mag meerdere dagen bevatten, maar twee
-       menu's mogen nooit dezelfde datum delen — zie controleMenus(). */
+    /* Eén menu per datum. Twee menu's op dezelfde dag is een invoerfout;
+       dat meldt controleMenus() in de console. */
     menus: [
+      {
+        id: 'kerstmenu',
+        datums: ['2026-12-25', '2026-12-26'],
+        naam: 'Christmas Dinner',
+        tekst: 'Voorgerechten: sùlt, ayaka en Christmas glazed ham. Hoofdgerecht naar keuze: ' +
+               'garlic shrimp & salmon, roasted chicken met béchamelsaus, tenderloin steak met ' +
+               'champignonsaus of stewed beef. Dessert: flan of stained glass cake.',
+        afbeelding: 'assets/img/kerstmenu.jpg',
+        kaartUrl: 'assets/img/kerstmenu.jpg',
+        prijs: 55,
+        prijsKind: 15
+      },
+      /* >>> IN TE VULLEN <<< voor 23, 24 en 27 december is nog geen kaart
+         aangeleverd. Vul naam, tekst, prijs en afbeelding in en haal
+         `tiencheck` weg; of schrap de datum uit `datums` hierboven als er
+         die dag geen kerstdiner is. */
       {
         id: 'kerst-23',
         datums: ['2026-12-23'],
         naam: 'Kerstmenu 23 december',
-        tekst: 'Omschrijving van het menu van 23 december.',
+        tekst: 'Menu van 23 december volgt.',
         afbeelding: 'assets/img/keuken-1.jpg',
         prijs: null,
+        prijsKind: null,
         tiencheck: true
       },
       {
         id: 'kerst-24',
         datums: ['2026-12-24'],
         naam: 'Kerstmenu 24 december',
-        tekst: 'Omschrijving van het menu van kerstavond.',
+        tekst: 'Menu van kerstavond volgt.',
         afbeelding: 'assets/img/keuken-3.jpg',
         prijs: null,
-        tiencheck: true
-      },
-      {
-        id: 'kerst-25',
-        datums: ['2026-12-25'],
-        naam: 'Kerstmenu 25 december',
-        tekst: 'Omschrijving van het menu van eerste kerstdag.',
-        afbeelding: 'assets/img/keuken-2.jpg',
-        prijs: null,
-        tiencheck: true
-      },
-      {
-        id: 'kerst-26',
-        datums: ['2026-12-26'],
-        naam: 'Kerstmenu 26 december',
-        tekst: 'Omschrijving van het menu van tweede kerstdag.',
-        afbeelding: 'assets/img/keuken-1.jpg',
-        prijs: null,
+        prijsKind: null,
         tiencheck: true
       },
       {
         id: 'kerst-27',
         datums: ['2026-12-27'],
         naam: 'Kerstmenu 27 december',
-        tekst: 'Omschrijving van het menu van 27 december.',
-        afbeelding: 'assets/img/keuken-3.jpg',
+        tekst: 'Menu van 27 december volgt.',
+        afbeelding: 'assets/img/keuken-2.jpg',
         prijs: null,
+        prijsKind: null,
         tiencheck: true
       }
     ],
 
-    /* Tekst van de popover bij "Beschikbaar voor jouw selectie". */
     infoTekst: {
       nl: 'Het beschikbare kerstmenu is afhankelijk van de datum die je hebt ' +
           'geselecteerd. Je kunt hieronder bekijken welk menu op jouw gekozen ' +
@@ -140,49 +125,39 @@
                  'augustus', 'september', 'oktober', 'november', 'december'];
 
   function pad(n) { return (n < 10 ? '0' : '') + n; }
-  function tijdTekst(min) { return pad(Math.floor(min / 60) % 24) + ':' + pad(min % 60); }
 
-  /* "2026-12-23" -> Date in lokale tijd. new Date('2026-12-23') leest als UTC
-     en kan er een dag naast zitten. */
   function naarDatum(sleutel) {
     var p = sleutel.split('-');
     return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
-  }
-  function datumSleutel(d) {
-    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
   }
   function datumTekst(sleutel) {
     var d = naarDatum(sleutel);
     return DAGEN[d.getDay()] + ' ' + d.getDate() + ' ' + MAANDEN[d.getMonth()];
   }
-  function euro(bedrag) {
-    return '€ ' + bedrag.toFixed(2).replace('.', ',');
-  }
+  function euro(b) { return '€ ' + Number(b).toFixed(2).replace('.', ','); }
 
-  /* Vandaag in de tijdzone van de zaak, zodat de knop rond middernacht niet
-     op de klok van de bezoeker afgaat. */
+  /* Vandaag in de tijdzone van de zaak, zodat de kerstmodus rond
+     middernacht niet op de klok van de bezoeker afgaat. */
   function vandaagSleutel() {
     try {
-      var f = new Intl.DateTimeFormat('en-CA', {
+      return new Intl.DateTimeFormat('en-CA', {
         timeZone: 'Europe/Brussels', year: 'numeric', month: '2-digit', day: '2-digit'
-      });
-      return f.format(new Date());
+      }).format(new Date());
     } catch (e) {
-      return datumSleutel(new Date());
+      var n = new Date();
+      return n.getFullYear() + '-' + pad(n.getMonth() + 1) + '-' + pad(n.getDate());
     }
   }
 
   if (vandaagSleutel() > KERST.toonTot) return;
 
-  /* Twee menu's op dezelfde dag is een invoerfout: dan is niet te bepalen
-     wat de gast krijgt. Melden in de console en de dubbele negeren. */
   function controleMenus() {
     var gezien = {};
     KERST.menus.forEach(function (m) {
       m.datums.forEach(function (d) {
         if (gezien[d]) {
-          console.error('Kerstmenu: meer dan één menu op ' + d +
-                        ' (' + gezien[d] + ' en ' + m.id + '). Alleen het eerste wordt gebruikt.');
+          console.error('Kerstmenu: meer dan één menu op ' + d + ' (' + gezien[d] +
+                        ' en ' + m.id + '). Alleen het eerste wordt gebruikt.');
         } else { gezien[d] = m.id; }
       });
     });
@@ -198,19 +173,13 @@
     }
     return null;
   }
-
-  function tijdenVoor(sleutel) {
-    var u = KERST.uren[naarDatum(sleutel).getDay()];
-    if (!u) return [];
-    var eerste = KERST.tijden.eersteTijd === null
-      ? u.open : Math.max(u.open, KERST.tijden.eersteTijd);
-    var laatste = u.dicht - KERST.tijden.laatsteVoorSluiten;
-    var lijst = [];
-    for (var m = eerste; m <= laatste; m += KERST.tijden.stapMinuten) lijst.push(m);
-    return lijst;
+  function shiftById(id) {
+    for (var i = 0; i < KERST.shifts.length; i++) {
+      if (KERST.shifts[i].id === id) return KERST.shifts[i];
+    }
+    return null;
   }
 
-  /* ---------- opbouw ---------- */
   var el = function (tag, cls, tekst) {
     var n = document.createElement(tag);
     if (cls) n.className = cls;
@@ -218,11 +187,33 @@
     return n;
   };
 
+  /* ---------- lichte kerstsfeer ---------- */
+  document.documentElement.classList.add('kerst-aan');
+
+  if (KERST.sfeer.lint) {
+    var lint = el('div', 'kerst-lint');
+    lint.setAttribute('aria-hidden', 'true');
+    document.body.insertBefore(lint, document.body.firstChild);
+  }
+
+  if (KERST.sfeer.logo) {
+    /* Alleen de bron wisselen; de verhouding verschilt van het gewone logo,
+       dus width/height mee, anders rekt de browser het uit. */
+    document.querySelectorAll('img.logo-img').forEach(function (img) {
+      img.src = 'assets/img/logo-kerst.png';
+      img.setAttribute('width', '602');
+      img.setAttribute('height', '343');
+    });
+    var icon = document.querySelector('link[rel="icon"]');
+    if (icon) icon.href = 'assets/img/logo-kerst.png';
+  }
+
+  /* ---------- paneel ---------- */
   var staat = {
     personen: KERST.personen.start,
+    kinderen: 0,
     datum: KERST.datums[0],
-    tijd: null,
-    menuId: null,
+    shiftId: KERST.shifts[0].id,
     taal: 'nl',
     bezig: false,
     aanvraagId: null
@@ -237,26 +228,23 @@
   var fab = el('button', 'kerst-fab');
   fab.type = 'button';
   fab.setAttribute('aria-haspopup', 'dialog');
-  fab.innerHTML = ICOON_AGENDA + '<span class="kerst-fab__lang">Kerstdiner reserveren</span>' +
-                  '<span class="kerst-fab__kort" hidden>Kerstdiner</span>';
-  /* Op smalle schermen het korte label; CSS verbergt de lange variant. */
-  if (window.matchMedia('(max-width: 480px)').matches) {
-    fab.querySelector('.kerst-fab__kort').hidden = false;
-  }
+  fab.setAttribute('aria-expanded', 'false');
+  fab.innerHTML = ICOON_AGENDA + '<span>Kerstdiner reserveren</span>';
 
-  var paneel = el('div', 'kerst-paneel');
-  paneel.hidden = true;
-  paneel.innerHTML =
-    '<div class="kerst-paneel__veil" data-sluit></div>' +
-    '<div class="kerst-paneel__blad" role="dialog" aria-modal="true"' +
-    '     aria-labelledby="kerst-titel" tabindex="-1">' +
+  var pop = el('div', 'kerst-pop');
+  pop.hidden = true;
+  pop.setAttribute('role', 'dialog');
+  pop.setAttribute('aria-modal', 'false');
+  pop.setAttribute('aria-labelledby', 'kerst-titel');
+  pop.tabIndex = -1;
+  pop.innerHTML =
     '  <div class="kerst-kop">' +
     '    <div>' +
     '      <h2 id="kerst-titel">Kerstdiner reserveren</h2>' +
-    '      <p>Café United · Bergweg 199A, Rotterdam</p>' +
+    '      <p>23 t/m 27 december · Café United</p>' +
     '    </div>' +
     '    <button class="kerst-kop__sluit" type="button" data-sluit aria-label="Sluiten">' +
-            ICOON_KRUIS + '</button>' +
+          ICOON_KRUIS + '</button>' +
     '  </div>' +
     '  <form class="kerst-body" novalidate>' +
     '    <div class="kerst-melding" role="status" aria-live="polite" hidden data-melding></div>' +
@@ -270,37 +258,36 @@
     '  </form>' +
     '  <div class="kerst-voet">' +
     '    <button class="kerst-verstuur" type="button" data-verstuur>Aanvraag versturen</button>' +
-    '    <p class="kerst-voet__klein">Dit is een reserveringsaanvraag. Je reservering staat' +
-    '      pas vast zodra je een bevestiging van ons hebt ontvangen.</p>' +
-    '  </div>' +
-    '</div>';
+    '    <p class="kerst-voet__klein">Dit is een aanvraag. Je reservering staat pas vast' +
+    '      zodra je een bevestiging van ons hebt ontvangen.</p>' +
+    '  </div>';
 
   document.body.appendChild(fab);
-  document.body.appendChild(paneel);
+  document.body.appendChild(pop);
 
-  var blad     = paneel.querySelector('.kerst-paneel__blad');
-  var form     = paneel.querySelector('form');
-  var melding  = paneel.querySelector('[data-melding]');
-  var vakKeuze = paneel.querySelector('[data-stap-keuze]');
-  var vakMenu  = paneel.querySelector('[data-stap-menu]');
-  var vakSam   = paneel.querySelector('[data-stap-sam]');
-  var vakCont  = paneel.querySelector('[data-stap-contact]');
-  var knopVerstuur = paneel.querySelector('[data-verstuur]');
-  var voet     = paneel.querySelector('.kerst-voet');
+  var form     = pop.querySelector('form');
+  var melding  = pop.querySelector('[data-melding]');
+  var vakKeuze = pop.querySelector('[data-stap-keuze]');
+  var vakMenu  = pop.querySelector('[data-stap-menu]');
+  var vakSam   = pop.querySelector('[data-stap-sam]');
+  var vakCont  = pop.querySelector('[data-stap-contact]');
+  var knopVerstuur = pop.querySelector('[data-verstuur]');
+  var voet     = pop.querySelector('.kerst-voet');
 
-  /* ---------- stap 1: personen, datum, tijd ---------- */
+  /* ---------- stap 1: personen, datum, shift ---------- */
   function bouwKeuze() {
     vakKeuze.innerHTML = '';
     vakKeuze.appendChild(el('h3', 'kerst-stap__titel', 'Jouw reservering'));
 
     var wrap = el('div');
     wrap.style.display = 'grid';
-    wrap.style.gap = '14px';
+    wrap.style.gap = '12px';
 
-    /* personen */
+    /* personen + kinderen naast elkaar */
+    var rij2 = el('div', 'kerst-rij2');
+
     var vP = el('div', 'kerst-veld');
-    var lP = el('label', null, 'Aantal personen');
-    lP.htmlFor = 'kerst-personen';
+    var lP = el('label', null, 'Personen'); lP.htmlFor = 'kerst-personen';
     vP.appendChild(lP);
     var rij = el('div', 'kerst-aantal');
     var min = el('button', null, '−'); min.type = 'button';
@@ -313,21 +300,38 @@
     rij.appendChild(min); rij.appendChild(inp); rij.appendChild(plus);
     vP.appendChild(rij);
 
-    function zetPersonen(n) {
-      n = Math.max(KERST.personen.min, Math.min(KERST.personen.max, n || KERST.personen.min));
-      staat.personen = n; inp.value = n;
-      min.disabled = n <= KERST.personen.min;
-      plus.disabled = n >= KERST.personen.max;
+    var vK = el('div', 'kerst-veld');
+    var lK = el('label', null, 'Waarvan kinderen'); lK.htmlFor = 'kerst-kinderen';
+    vK.appendChild(lK);
+    var inpK = el('input'); inpK.type = 'number'; inpK.id = 'kerst-kinderen';
+    inpK.min = 0; inpK.max = KERST.personen.max; inpK.value = staat.kinderen;
+    inpK.inputMode = 'numeric';
+    vK.appendChild(inpK);
+    vK.appendChild(el('span', 'kerst-hint', 'Kindertarief'));
+
+    rij2.appendChild(vP); rij2.appendChild(vK);
+
+    function zetAantallen(p, k) {
+      p = Math.max(KERST.personen.min, Math.min(KERST.personen.max, p || KERST.personen.min));
+      k = Math.max(0, Math.min(p, isNaN(k) ? 0 : k));   // nooit meer kinderen dan personen
+      staat.personen = p; staat.kinderen = k;
+      inp.value = p; inpK.value = k; inpK.max = p;
+      min.disabled = p <= KERST.personen.min;
+      plus.disabled = p >= KERST.personen.max;
       bouwSamenvatting();
     }
-    min.addEventListener('click', function () { zetPersonen(staat.personen - 1); });
-    plus.addEventListener('click', function () { zetPersonen(staat.personen + 1); });
-    inp.addEventListener('change', function () { zetPersonen(parseInt(inp.value, 10)); });
+    min.addEventListener('click', function () { zetAantallen(staat.personen - 1, staat.kinderen); });
+    plus.addEventListener('click', function () { zetAantallen(staat.personen + 1, staat.kinderen); });
+    inp.addEventListener('change', function () {
+      zetAantallen(parseInt(inp.value, 10), staat.kinderen);
+    });
+    inpK.addEventListener('change', function () {
+      zetAantallen(staat.personen, parseInt(inpK.value, 10));
+    });
 
     /* datum */
     var vD = el('div', 'kerst-veld');
-    var lD = el('label', null, 'Datum');
-    lD.htmlFor = 'kerst-datum';
+    var lD = el('label', null, 'Datum'); lD.htmlFor = 'kerst-datum';
     vD.appendChild(lD);
     var selD = el('select'); selD.id = 'kerst-datum';
     KERST.datums.forEach(function (d) {
@@ -338,53 +342,36 @@
     });
     selD.addEventListener('change', function () {
       staat.datum = selD.value;
-      staat.menuId = null;            // menu hoort bij de datum, dus opnieuw kiezen
-      bouwTijden();
       bouwMenus();
       bouwSamenvatting();
     });
     vD.appendChild(selD);
 
-    /* tijd */
-    var vT = el('div', 'kerst-veld');
-    var lT = el('label', null, 'Tijd');
-    lT.htmlFor = 'kerst-tijd';
-    vT.appendChild(lT);
-    var selT = el('select'); selT.id = 'kerst-tijd';
-    vT.appendChild(selT);
-    vT.appendChild(el('span', 'kerst-fout'));
-
-    wrap.appendChild(vP); wrap.appendChild(vD); wrap.appendChild(vT);
-    vakKeuze.appendChild(wrap);
-
-    zetPersonen(staat.personen);
-    bouwTijden();
-  }
-
-  function bouwTijden() {
-    var sel = paneel.querySelector('#kerst-tijd');
-    if (!sel) return;
-    sel.innerHTML = '';
-    var lijst = tijdenVoor(staat.datum);
-    if (!lijst.length) {
-      var o = el('option', null, 'Geen tijden beschikbaar');
-      o.value = ''; sel.appendChild(o); staat.tijd = null; return;
-    }
-    if (lijst.indexOf(staat.tijd) === -1) staat.tijd = lijst[0];
-    lijst.forEach(function (m) {
-      /* Een tijd boven 1440 valt na middernacht; dat zeggen we erbij,
-         anders lijkt 00:30 eerder dan 23:00. */
-      var label = tijdTekst(m) + (m >= 24 * 60 ? ' (na middernacht)' : '');
-      var o = el('option', null, label);
-      o.value = String(m);
-      if (m === staat.tijd) o.selected = true;
-      sel.appendChild(o);
+    /* shift */
+    var vS = el('div', 'kerst-veld');
+    vS.appendChild(el('span', 'kerst-veld__label', 'Tijdslot'));
+    var shifts = el('div', 'kerst-shifts');
+    KERST.shifts.forEach(function (s) {
+      var b = el('button', 'kerst-shift');
+      b.type = 'button';
+      b.setAttribute('aria-pressed', s.id === staat.shiftId ? 'true' : 'false');
+      b.appendChild(el('span', 'kerst-shift__tijd', s.van + ' – ' + s.tot));
+      if (s.naam) b.appendChild(el('span', 'kerst-shift__naam', s.naam));
+      b.addEventListener('click', function () {
+        staat.shiftId = s.id;
+        shifts.querySelectorAll('.kerst-shift').forEach(function (x) {
+          x.setAttribute('aria-pressed', 'false');
+        });
+        b.setAttribute('aria-pressed', 'true');
+        bouwSamenvatting();
+      });
+      shifts.appendChild(b);
     });
-    sel.onchange = function () {
-      staat.tijd = parseInt(sel.value, 10);
-      bouwSamenvatting();
-    };
-    bouwSamenvatting();
+    vS.appendChild(shifts);
+
+    wrap.appendChild(rij2); wrap.appendChild(vD); wrap.appendChild(vS);
+    vakKeuze.appendChild(wrap);
+    zetAantallen(staat.personen, staat.kinderen);
   }
 
   /* ---------- stap 2: menu ---------- */
@@ -399,8 +386,8 @@
     iKnop.type = 'button';
     iKnop.setAttribute('aria-expanded', 'false');
     iKnop.setAttribute('aria-label', 'Uitleg over het beschikbare menu');
-    var pop = el('div', 'kerst-info__pop');
-    pop.hidden = true;
+    var popover = el('div', 'kerst-info__pop');
+    popover.hidden = true;
 
     var talen = el('div', 'kerst-info__talen');
     var tekstP = el('p', null, KERST.infoTekst[staat.taal]);
@@ -419,27 +406,20 @@
       });
       talen.appendChild(b);
     });
-    pop.appendChild(talen); pop.appendChild(tekstP);
+    popover.appendChild(talen); popover.appendChild(tekstP);
 
     iKnop.addEventListener('click', function () {
-      var open = pop.hidden;
-      pop.hidden = !open;
+      var open = popover.hidden;
+      popover.hidden = !open;
       iKnop.setAttribute('aria-expanded', open ? 'true' : 'false');
-      if (open) {
-        /* Binnen het paneel houden: tegen de rechterrand naar binnen klappen. */
-        pop.classList.remove('kerst-info__pop--links');
-        var r = pop.getBoundingClientRect();
-        var b = blad.getBoundingClientRect();
-        if (r.right > b.right - 8) pop.classList.add('kerst-info__pop--links');
-      }
     });
     document.addEventListener('click', function (e) {
-      if (!pop.hidden && !info.contains(e.target)) {
-        pop.hidden = true; iKnop.setAttribute('aria-expanded', 'false');
+      if (!popover.hidden && !info.contains(e.target)) {
+        popover.hidden = true; iKnop.setAttribute('aria-expanded', 'false');
       }
     });
 
-    info.appendChild(iKnop); info.appendChild(pop);
+    info.appendChild(iKnop); info.appendChild(popover);
     titel.appendChild(info);
     vakMenu.appendChild(titel);
 
@@ -449,31 +429,31 @@
     if (!menu) {
       lijst.appendChild(el('p', 'kerst-leeg',
         'Voor ' + datumTekst(staat.datum) + ' is nog geen kerstmenu ingesteld.'));
-      staat.menuId = null;
       vakMenu.appendChild(lijst);
       return;
     }
 
-    /* Precies één menu per datum: dat staat vast en is meteen gekozen.
-       De kaart blijft een knop zodat de keuze zichtbaar bevestigd is. */
-    staat.menuId = menu.id;
-
-    var kaart = el('button', 'kerst-menu');
-    kaart.type = 'button';
-    kaart.setAttribute('aria-pressed', 'true');
-
+    /* Precies één menu per datum, dus niets te kiezen: de kaart toont wat
+       er die dag op tafel komt. */
+    var kaart = el('div', 'kerst-menu');
     var img = el('img');
-    img.src = menu.afbeelding;
-    img.alt = '';
-    img.loading = 'lazy';
+    img.src = menu.afbeelding; img.alt = ''; img.loading = 'lazy';
     kaart.appendChild(img);
 
     var tekstVak = el('div');
-    tekstVak.appendChild(el('div', 'kerst-menu__dag', datumTekst(menu.datums[0])));
+    tekstVak.appendChild(el('div', 'kerst-menu__dag',
+      menu.datums.map(datumTekst).join(' · ')));
     tekstVak.appendChild(el('div', 'kerst-menu__naam', menu.naam));
     tekstVak.appendChild(el('p', 'kerst-menu__tekst', menu.tekst));
-    if (menu.prijs !== null && menu.prijs !== undefined) {
-      tekstVak.appendChild(el('div', 'kerst-menu__prijs', euro(menu.prijs) + ' p.p.'));
+    if (menu.prijs != null) {
+      var prijs = euro(menu.prijs) + ' p.p.';
+      if (menu.prijsKind != null) prijs += ' · ' + euro(menu.prijsKind) + ' per kind';
+      tekstVak.appendChild(el('div', 'kerst-menu__prijs', prijs));
+    }
+    if (menu.kaartUrl) {
+      var a = el('a', 'kerst-menu__link', 'Bekijk de kaart');
+      a.href = menu.kaartUrl; a.target = '_blank'; a.rel = 'noopener';
+      tekstVak.appendChild(a);
     }
     if (menu.tiencheck) {
       tekstVak.appendChild(el('span', 'kerst-menu__todo', 'Menugegevens nog invullen'));
@@ -484,30 +464,43 @@
   }
 
   /* ---------- stap 3: samenvatting ---------- */
+  function rekenTotaal(menu) {
+    if (!menu || menu.prijs == null) return null;
+    var kinderen = staat.kinderen;
+    var volw = staat.personen - kinderen;
+    var kindPrijs = menu.prijsKind != null ? menu.prijsKind : menu.prijs;
+    return volw * menu.prijs + kinderen * kindPrijs;
+  }
+
   function bouwSamenvatting() {
     vakSam.innerHTML = '';
     vakSam.appendChild(el('h3', 'kerst-stap__titel', 'Samenvatting'));
 
     var menu = menuVoorDatum(staat.datum);
+    var s = shiftById(staat.shiftId);
     var doos = el('div', 'kerst-sam');
     var dl = el('dl');
+    function regel(n, w) { dl.appendChild(el('dt', null, n)); dl.appendChild(el('dd', null, w)); }
 
-    function regel(naam, waarde) {
-      dl.appendChild(el('dt', null, naam));
-      dl.appendChild(el('dd', null, waarde));
+    var wie = String(staat.personen);
+    if (staat.kinderen > 0) {
+      wie += ' (' + (staat.personen - staat.kinderen) + ' volw. + ' + staat.kinderen + ' kind' +
+             (staat.kinderen === 1 ? '' : 'eren') + ')';
     }
-    regel('Personen', String(staat.personen));
+    regel('Personen', wie);
     regel('Datum', datumTekst(staat.datum));
-    regel('Tijd', staat.tijd === null ? '—'
-      : tijdTekst(staat.tijd) + (staat.tijd >= 24 * 60 ? ' (na middernacht)' : ''));
+    regel('Tijdslot', s ? s.van + ' – ' + s.tot : '—');
     regel('Menu', menu ? menu.naam : 'Nog niet ingesteld');
     regel('Prijs p.p.', menu && menu.prijs != null ? euro(menu.prijs) : 'Nog niet bekend');
+    if (staat.kinderen > 0 && menu && menu.prijsKind != null) {
+      regel('Per kind', euro(menu.prijsKind));
+    }
     doos.appendChild(dl);
 
+    var totaal = rekenTotaal(menu);
     var tot = el('div', 'kerst-sam__totaal');
     tot.appendChild(el('span', null, 'Totaal'));
-    tot.appendChild(el('strong', null,
-      menu && menu.prijs != null ? euro(menu.prijs * staat.personen) : 'Nog niet bekend'));
+    tot.appendChild(el('strong', null, totaal == null ? 'Nog niet bekend' : euro(totaal)));
     doos.appendChild(tot);
     vakSam.appendChild(doos);
   }
@@ -519,7 +512,7 @@
 
     var wrap = el('div');
     wrap.style.display = 'grid';
-    wrap.style.gap = '14px';
+    wrap.style.gap = '12px';
 
     function veld(id, label, verplicht) {
       var v = el('div', 'kerst-veld');
@@ -527,22 +520,17 @@
       var l = el('label');
       l.htmlFor = 'kerst-' + id;
       l.appendChild(document.createTextNode(label + ' '));
-      if (verplicht) {
-        var s = el('span', 'kerst-req', '*');
-        l.appendChild(s);
-      }
+      if (verplicht) l.appendChild(el('span', 'kerst-req', '*'));
       v.appendChild(l);
       return v;
     }
 
     var vN = veld('naam', 'Volledige naam', true);
-    var iN = el('input'); iN.type = 'text'; iN.id = 'kerst-naam';
-    iN.autocomplete = 'name'; iN.name = 'naam';
+    var iN = el('input'); iN.type = 'text'; iN.id = 'kerst-naam'; iN.autocomplete = 'name';
     vN.appendChild(iN); vN.appendChild(el('span', 'kerst-fout'));
 
     var vE = veld('email', 'E-mailadres', true);
-    var iE = el('input'); iE.type = 'email'; iE.id = 'kerst-email';
-    iE.autocomplete = 'email'; iE.name = 'email';
+    var iE = el('input'); iE.type = 'email'; iE.id = 'kerst-email'; iE.autocomplete = 'email';
     vE.appendChild(iE); vE.appendChild(el('span', 'kerst-fout'));
 
     var vT = veld('telefoon', 'Telefoonnummer', true);
@@ -556,13 +544,13 @@
       selLand.appendChild(o);
     });
     var iT = el('input'); iT.type = 'tel'; iT.id = 'kerst-telefoon';
-    iT.autocomplete = 'tel-national'; iT.name = 'telefoon'; iT.placeholder = '6 12345678';
+    iT.autocomplete = 'tel-national'; iT.placeholder = '6 12345678';
     tel.appendChild(selLand); tel.appendChild(iT);
     vT.appendChild(tel); vT.appendChild(el('span', 'kerst-fout'));
 
     var vO = veld('opmerking', 'Opmerkingen of wensen', false);
-    var iO = el('textarea'); iO.id = 'kerst-opmerking'; iO.name = 'opmerking';
-    iO.placeholder = 'Allergieën, een kinderstoel, een plek bij het raam…';
+    var iO = el('textarea'); iO.id = 'kerst-opmerking';
+    iO.placeholder = 'Allergieën, keuze hoofdgerecht, een kinderstoel…';
     vO.appendChild(iO);
 
     var vA = el('div', 'kerst-veld');
@@ -575,8 +563,7 @@
     a.href = KERST.privacyUrl; a.target = '_blank'; a.rel = 'noopener';
     sp.appendChild(a);
     sp.appendChild(document.createTextNode(' van Café United. '));
-    var ster = el('span', 'kerst-req', '*');
-    sp.appendChild(ster);
+    sp.appendChild(el('span', 'kerst-req', '*'));
     lab.appendChild(chk); lab.appendChild(sp);
     vA.appendChild(lab); vA.appendChild(el('span', 'kerst-fout'));
 
@@ -586,28 +573,23 @@
 
   /* ---------- controle ---------- */
   function zetFout(veldId, bericht) {
-    var v = paneel.querySelector('[data-veld="' + veldId + '"]');
+    var v = pop.querySelector('[data-veld="' + veldId + '"]');
     if (!v) return;
     v.classList.toggle('kerst-veld--fout', !!bericht);
     var f = v.querySelector('.kerst-fout');
     if (f) f.textContent = bericht || '';
   }
 
-  function leesWaarden() {
-    return {
-      naam: (paneel.querySelector('#kerst-naam') || {}).value || '',
-      email: (paneel.querySelector('#kerst-email') || {}).value || '',
-      land: (paneel.querySelector('#kerst-land') || {}).value || '',
-      telefoon: (paneel.querySelector('#kerst-telefoon') || {}).value || '',
-      opmerking: (paneel.querySelector('#kerst-opmerking') || {}).value || '',
-      akkoord: !!(paneel.querySelector('#kerst-akkoord') || {}).checked
-    };
-  }
-
   function controleer() {
-    var w = leesWaarden();
+    var w = {
+      naam: (pop.querySelector('#kerst-naam') || {}).value || '',
+      email: (pop.querySelector('#kerst-email') || {}).value || '',
+      land: (pop.querySelector('#kerst-land') || {}).value || '',
+      telefoon: (pop.querySelector('#kerst-telefoon') || {}).value || '',
+      opmerking: (pop.querySelector('#kerst-opmerking') || {}).value || '',
+      akkoord: !!(pop.querySelector('#kerst-akkoord') || {}).checked
+    };
     var fouten = 0;
-
     ['naam', 'email', 'telefoon', 'akkoord'].forEach(function (k) { zetFout(k, ''); });
 
     if (!w.naam.trim()) { zetFout('naam', 'Vul je naam in.'); fouten++; }
@@ -620,7 +602,6 @@
     else if (cijfers.length < 6) { zetFout('telefoon', 'Dit nummer lijkt te kort.'); fouten++; }
     if (!w.akkoord) { zetFout('akkoord', 'Je moet hiermee akkoord gaan om te kunnen reserveren.'); fouten++; }
 
-    if (staat.tijd === null) { fouten++; }
     return fouten === 0 ? w : null;
   }
 
@@ -640,16 +621,15 @@
     var w = controleer();
     if (!w) {
       toonMelding('err', ['Niet alles is ingevuld. Kijk de rood gemarkeerde velden na.']);
-      var eerste = paneel.querySelector('.kerst-veld--fout input, .kerst-veld--fout select');
+      var eerste = pop.querySelector('.kerst-veld--fout input, .kerst-veld--fout select');
       if (eerste) eerste.focus();
       return;
     }
 
     var menu = menuVoorDatum(staat.datum);
+    var s = shiftById(staat.shiftId);
     var pot = form.elements.website;
 
-    /* Eén id per poging; de server negeert een herhaling met hetzelfde id,
-       zodat dubbelklikken of een herstelde verbinding niet twee aanvragen maakt. */
     if (!staat.aanvraagId) {
       staat.aanvraagId = 'k-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
     }
@@ -657,13 +637,17 @@
     var lading = {
       aanvraagId: staat.aanvraagId,
       personen: staat.personen,
+      kinderen: staat.kinderen,
       datum: staat.datum,
       datumTekst: datumTekst(staat.datum),
-      tijd: tijdTekst(staat.tijd),
-      naMiddernacht: staat.tijd >= 24 * 60,
+      shiftId: staat.shiftId,
+      shiftTekst: s ? s.van + ' – ' + s.tot + (s.naam ? ' (' + s.naam + ')' : '') : '',
+      shiftPlaatsen: s ? s.plaatsen : null,
       menuId: menu ? menu.id : null,
       menuNaam: menu ? menu.naam : null,
       prijsPP: menu && menu.prijs != null ? menu.prijs : null,
+      prijsKind: menu && menu.prijsKind != null ? menu.prijsKind : null,
+      totaal: rekenTotaal(menu),
       naam: w.naam.trim(),
       email: w.email.trim(),
       telefoon: (w.land + ' ' + w.telefoon).trim(),
@@ -705,13 +689,12 @@
       melding.textContent = '';
       melding.appendChild(el('p', null,
         'Bedankt ' + lading.naam.split(' ')[0] + '! Je aanvraag voor ' + lading.datumTekst +
-        ' om ' + lading.tijd + ' met ' + lading.personen +
+        ', ' + lading.shiftTekst + ' met ' + lading.personen +
         (lading.personen === 1 ? ' persoon' : ' personen') + ' staat bij ons in de inbox.'));
       melding.appendChild(el('p', null,
         'Je krijgt een bevestiging per e-mail zodra we de reservering hebben vastgelegd. ' +
         'De aanvraag staat dus nog niet vast.'));
-      /* Paneel laten staan zodat de bevestiging gelezen kan worden. */
-      form.parentNode.insertBefore(melding, form);
+      pop.insertBefore(melding, form);
       staat.aanvraagId = null;
     }).catch(function (err) {
       console.error('Kerstreservering versturen mislukt:', err && err.message);
@@ -732,52 +715,94 @@
   /* ---------- openen en sluiten ---------- */
   var laatsteFocus = null;
 
-  function open() {
+  function openen() {
     laatsteFocus = document.activeElement;
-    paneel.hidden = false;
-    fab.classList.add('is-weg');
+    pop.hidden = false;
     fab.setAttribute('aria-expanded', 'true');
-    document.body.classList.add('is-locked');
-    /* eerst tonen, dan pas de klasse: anders is er geen frame om vanaf te animeren */
-    requestAnimationFrame(function () { paneel.classList.add('is-open'); });
-    blad.focus();
+    /* Eerst tonen, dan pas de klasse, anders is er geen beginframe om vanaf
+       te animeren. Een reflow afdwingen in plaats van requestAnimationFrame:
+       die draait niet in een tabblad op de achtergrond, en dan zou de popup
+       op .88 en opacity 0 blijven staan — open maar onzichtbaar. */
+    void pop.offsetWidth;
+    pop.classList.add('is-open');
+    pop.focus();
   }
 
-  function sluit() {
-    paneel.classList.remove('is-open');
-    fab.classList.remove('is-weg');
+  function sluiten() {
+    pop.classList.remove('is-open');
     fab.setAttribute('aria-expanded', 'false');
-    document.body.classList.remove('is-locked');
-    var klaar = function () { paneel.hidden = true; };
+    var klaar = function () { pop.hidden = true; };
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) klaar();
-    else setTimeout(klaar, 340);
+    else setTimeout(klaar, 260);
     if (laatsteFocus && laatsteFocus.focus) laatsteFocus.focus();
   }
 
-  fab.addEventListener('click', open);
-  paneel.addEventListener('click', function (e) {
-    if (e.target.closest('[data-sluit]')) sluit();
+  fab.addEventListener('click', function () {
+    if (pop.hidden) openen(); else sluiten();
+  });
+  pop.addEventListener('click', function (e) {
+    if (e.target.closest('[data-sluit]')) sluiten();
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && !paneel.hidden) sluit();
+    if (e.key === 'Escape' && !pop.hidden) sluiten();
   });
-
-  /* Focus binnen het paneel houden zolang het open is. */
-  blad.addEventListener('keydown', function (e) {
-    if (e.key !== 'Tab') return;
-    var items = blad.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-    var zichtbaar = Array.prototype.filter.call(items, function (n) {
-      return n.offsetParent !== null && !n.disabled;
-    });
-    if (!zichtbaar.length) return;
-    var eerste = zichtbaar[0], laatste = zichtbaar[zichtbaar.length - 1];
-    if (e.shiftKey && document.activeElement === eerste) { e.preventDefault(); laatste.focus(); }
-    else if (!e.shiftKey && document.activeElement === laatste) { e.preventDefault(); eerste.focus(); }
+  /* Buiten de popup klikken sluit hem; de knop zelf schakelt zelf. */
+  document.addEventListener('click', function (e) {
+    if (pop.hidden) return;
+    if (!pop.contains(e.target) && !fab.contains(e.target)) sluiten();
   });
 
   bouwKeuze();
   bouwMenus();
   bouwSamenvatting();
   bouwContact();
+
+  /* ---------- kerstblok op de homepage ---------- */
+  if (KERST.sfeer.homepageBlok) {
+    var anker = document.querySelector('main .section--green');
+    var kerstMenu = menuVoorDatum('2026-12-25');
+    if (anker && kerstMenu) {
+      var band = el('section', 'section kerst-band');
+      /* Geen 'reveal': main.js verzamelt die elementen bij het laden, en dit
+         blok komt er daarna pas bij. Het zou dan op opacity 0 blijven staan. */
+      var wrapB = el('div', 'wrap center');
+      wrapB.appendChild(el('p', 'eyebrow', 'Kerst bij United'));
+      wrapB.appendChild(el('h2', 'title title--sm', 'Christmas Dinner'));
+
+      var grid = el('div', 'kerst-band__grid');
+      var aK = el('a', 'kerst-band__kaart');
+      aK.href = kerstMenu.kaartUrl || kerstMenu.afbeelding;
+      aK.target = '_blank'; aK.rel = 'noopener';
+      aK.setAttribute('aria-label', 'De kerstkaart op ware grootte openen');
+      var imgK = el('img');
+      imgK.src = kerstMenu.afbeelding; imgK.loading = 'lazy'; imgK.decoding = 'async';
+      imgK.width = 900; imgK.height = 1272;
+      imgK.alt = 'Kerstkaart van Café United met voorgerechten, hoofdgerechten en dessert, ' +
+                 '55 euro per persoon en 15 euro per kind.';
+      aK.appendChild(imgK);
+      grid.appendChild(aK);
+
+      var tekstB = el('div');
+      tekstB.appendChild(el('p', null,
+        'Van 23 tot en met 27 december staat er een kerstdiner klaar. We werken met drie ' +
+        'tijdsloten per dag, dus reserveer op tijd — vol is vol.'));
+      tekstB.appendChild(el('p', null,
+        euro(kerstMenu.prijs) + ' per persoon, ' + euro(kerstMenu.prijsKind) + ' per kind.'));
+      var rijB = el('div', 'btn-row');
+      var knopB = el('button', 'btn btn--primary', 'Reserveer het kerstdiner');
+      knopB.type = 'button';
+      knopB.addEventListener('click', function () { if (pop.hidden) openen(); });
+      rijB.appendChild(knopB);
+      var kaartB = el('a', 'btn btn--ghost', 'Bekijk de kaart');
+      kaartB.href = kerstMenu.kaartUrl || kerstMenu.afbeelding;
+      kaartB.target = '_blank'; kaartB.rel = 'noopener';
+      rijB.appendChild(kaartB);
+      tekstB.appendChild(rijB);
+      grid.appendChild(tekstB);
+
+      wrapB.appendChild(grid);
+      band.appendChild(wrapB);
+      anker.parentNode.insertBefore(band, anker);
+    }
+  }
 })();
