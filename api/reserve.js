@@ -157,8 +157,18 @@ module.exports = async function handler(req, res) {
   if (req.method === 'GET') {
     res.setHeader('Cache-Control', 'no-store');
     if (!TELLER_AAN) {
-      /* Niets beloven wat we niet kunnen waarmaken. */
-      return res.status(200).json({ tellerAan: false, shifts: SHIFTS, vrij: null });
+      /* Welke namen we zochten en wat er gevonden is — alleen namen, nooit
+         waarden. Zonder dit is "teller uit" niet te onderscheiden van
+         "teller kapot" en zoek je je blind in de instellingen. */
+      const gevonden = ['KV_REST_API_URL', 'KV_REST_API_TOKEN',
+                        'UPSTASH_REDIS_REST_URL', 'UPSTASH_REDIS_REST_TOKEN',
+                        'KV_URL', 'REDIS_URL']
+        .filter((n) => !!process.env[n]);
+      return res.status(200).json({
+        tellerAan: false, shifts: SHIFTS, vrij: null,
+        reden: 'geen REST-variabelen gevonden',
+        gevondenNamen: gevonden
+      });
     }
     try {
       const vrij = {};
@@ -170,7 +180,12 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ tellerAan: true, shifts: SHIFTS, vrij });
     } catch (err) {
       console.error('Beschikbaarheid ophalen mislukt:', err.message);
-      return res.status(200).json({ tellerAan: false, shifts: SHIFTS, vrij: null });
+      return res.status(200).json({
+        tellerAan: false, shifts: SHIFTS, vrij: null,
+        reden: 'verbinding met de teller mislukt',
+        /* Geen token in de melding: alleen de status of het type fout. */
+        fout: String(err.message).replace(/https?:\/\/[^\s]+/g, '[url]').slice(0, 120)
+      });
     }
   }
 

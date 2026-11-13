@@ -76,7 +76,14 @@
                'garlic shrimp & salmon, roasted chicken met béchamelsaus, tenderloin steak met ' +
                'champignonsaus of stewed beef. Dessert: flan of stained glass cake.',
         afbeelding: 'assets/img/kerstmenu.jpg',
-        kaartUrl: 'assets/img/kerstmenu.jpg',
+        /* Dezelfde kaart in meerdere talen. De eerste is de afbeelding die
+           in de popup staat; alle kaarten krijgen een eigen link.
+           >>> IN TE VULLEN <<< de Papiamentse kaart is er nog niet. Zet het
+           bestand in assets/img/ en haal de // weg bij de regel eronder. */
+        kaarten: [
+          { taal: 'Nederlands', url: 'assets/img/kerstmenu.jpg' }
+          // , { taal: 'Papiamentu', url: 'assets/img/kerstmenu-pap.jpg' }
+        ],
         prijs: 55,
         prijsKind: 15
       },
@@ -175,6 +182,15 @@
     });
   }
   controleMenus();
+
+  /* Alle kaarten van een menu, ongeacht of ze als `kaarten` of als los
+     `kaartUrl` zijn ingesteld. */
+  function menuKaarten(menu) {
+    if (!menu) return [];
+    if (menu.kaarten && menu.kaarten.length) return menu.kaarten;
+    if (menu.kaartUrl) return [{ taal: '', url: menu.kaartUrl }];
+    return [];
+  }
 
   function menuVoorDatum(sleutel) {
     for (var i = 0; i < KERST.menus.length; i++) {
@@ -277,8 +293,18 @@
     fetch(KERST.endpoint, { headers: { 'Accept': 'application/json' } })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (data) {
-        if (!data || !data.tellerAan || !data.vrij) return;
+        if (!data || !data.tellerAan || !data.vrij) {
+          if (data && data.reden) console.warn('Kerstteller uit:', data.reden);
+          return;
+        }
         staat.vrij = data.vrij;
+        /* Met een werkende teller wordt de plaats bij het versturen echt
+           vastgehouden, dus mag de voetnoot dat ook zeggen. */
+        var voetnoot = pop.querySelector('[data-voetnoot]');
+        if (voetnoot) {
+          voetnoot.textContent = 'Je plek wordt meteen voor je vastgehouden. ' +
+            'De bevestiging krijg je per e-mail.';
+        }
         bouwKeuze();
         bouwSamenvatting();
       })
@@ -325,9 +351,9 @@
     '    </div>' +
     '  </form>' +
     '  <div class="kerst-voet">' +
-    '    <button class="kerst-verstuur" type="button" data-verstuur>Aanvraag versturen</button>' +
-    '    <p class="kerst-voet__klein">Dit is een aanvraag. Je reservering staat pas vast' +
-    '      zodra je een bevestiging van ons hebt ontvangen.</p>' +
+    '    <button class="kerst-verstuur" type="button" data-verstuur>Reserveren</button>' +
+    '    <p class="kerst-voet__klein" data-voetnoot>Je reservering staat pas vast zodra ' +
+    'je een bevestiging van ons hebt ontvangen.</p>' +
     '  </div>';
 
   document.body.appendChild(fab);
@@ -534,6 +560,21 @@
     vakMenu.appendChild(titel);
 
     var menu = menuVoorDatum(staat.datum);
+
+    /* Alleen vertellen over talen die er echt zijn: een link naar een kaart
+       die niet bestaat is erger dan hem niet noemen. */
+    var kaartenNu = menuKaarten(menu).filter(function (k) { return k.taal; });
+    if (kaartenNu.length > 1) {
+      var talen = kaartenNu.map(function (k) { return k.taal; });
+      vakMenu.appendChild(el('p', 'kerst-menu-uitleg',
+        'Tik op de kaart om hem groot te bekijken — het is hetzelfde menu, ' +
+        'en je kunt kiezen tussen ' + talen.slice(0, -1).join(', ') + ' en ' +
+        talen[talen.length - 1] + '.'));
+    } else if (kaartenNu.length === 1 || menuKaarten(menu).length === 1) {
+      vakMenu.appendChild(el('p', 'kerst-menu-uitleg',
+        'Tik op de kaart om hem groot te bekijken.'));
+    }
+
     var lijst = el('div', 'kerst-menus');
 
     if (!menu) {
@@ -560,10 +601,17 @@
       if (menu.prijsKind != null) prijs += ' · ' + euro(menu.prijsKind) + ' per kind';
       tekstVak.appendChild(el('div', 'kerst-menu__prijs', prijs));
     }
-    if (menu.kaartUrl) {
-      var a = el('a', 'kerst-menu__link', 'Bekijk de kaart');
-      a.href = menu.kaartUrl; a.target = '_blank'; a.rel = 'noopener';
-      tekstVak.appendChild(a);
+    /* Eén link per taal waarin de kaart bestaat. */
+    var kaarten = menuKaarten(menu);
+    if (kaarten.length) {
+      var rijLinks = el('div', 'kerst-menu__links');
+      kaarten.forEach(function (k) {
+        var a = el('a', 'kerst-menu__link',
+          kaarten.length === 1 ? 'Bekijk de kaart' : 'Kaart in ' + k.taal);
+        a.href = k.url; a.target = '_blank'; a.rel = 'noopener';
+        rijLinks.appendChild(a);
+      });
+      tekstVak.appendChild(rijLinks);
     }
     if (menu.tiencheck) {
       tekstVak.appendChild(el('span', 'kerst-menu__todo', 'Menugegevens nog invullen'));
@@ -865,9 +913,13 @@
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && !pop.hidden) sluiten();
   });
-  /* Buiten de popup klikken sluit hem; de knop zelf schakelt zelf. */
+  /* Buiten de popup klikken sluit hem; de knop zelf schakelt zelf.
+     Knoppen met data-kerst-open (badge in de hero, knop in het kerstblok)
+     zijn uitgezonderd: hun klik bereikt deze regel vlak nadat zij de popup
+     hebben geopend, en zou hem dan meteen weer dichtgooien. */
   document.addEventListener('click', function (e) {
     if (pop.hidden) return;
+    if (e.target.closest && e.target.closest('[data-kerst-open]')) return;
     if (!pop.contains(e.target) && !fab.contains(e.target)) sluiten();
   });
 
@@ -890,6 +942,7 @@
         '<path d="M12 2l2.1 4.6L19 7.3l-3.5 3.3.9 4.8L12 13.2l-4.4 2.2.9-4.8L5 7.3l4.9-.7z"/>' +
         '<path d="M11 16h2v6h-2z"/></svg>' +
         '<span>Kerstdiner · 23 t/m 27 december</span>';
+      badge.setAttribute('data-kerst-open', '');
       badge.addEventListener('click', function () { if (pop.hidden) openen(); });
       heroSub.parentNode.insertBefore(badge, heroSub);
     }
@@ -909,7 +962,8 @@
 
       var grid = el('div', 'kerst-band__grid');
       var aK = el('a', 'kerst-band__kaart');
-      aK.href = kerstMenu.kaartUrl || kerstMenu.afbeelding;
+      var bandKaarten = menuKaarten(kerstMenu);
+      aK.href = (bandKaarten[0] || {}).url || kerstMenu.afbeelding;
       aK.target = '_blank'; aK.rel = 'noopener';
       aK.setAttribute('aria-label', 'De kerstkaart op ware grootte openen');
       var imgK = el('img');
@@ -929,12 +983,17 @@
       var rijB = el('div', 'btn-row');
       var knopB = el('button', 'btn btn--primary', 'Reserveer het kerstdiner');
       knopB.type = 'button';
+      knopB.setAttribute('data-kerst-open', '');
       knopB.addEventListener('click', function () { if (pop.hidden) openen(); });
       rijB.appendChild(knopB);
-      var kaartB = el('a', 'btn btn--ghost', 'Bekijk de kaart');
-      kaartB.href = kerstMenu.kaartUrl || kerstMenu.afbeelding;
-      kaartB.target = '_blank'; kaartB.rel = 'noopener';
-      rijB.appendChild(kaartB);
+      /* Eén knop per taal waarin de kaart bestaat. */
+      (bandKaarten.length ? bandKaarten : [{ taal: '', url: kerstMenu.afbeelding }])
+        .forEach(function (k) {
+          var kaartB = el('a', 'btn btn--ghost',
+            bandKaarten.length > 1 ? 'Kaart in ' + k.taal : 'Bekijk de kaart');
+          kaartB.href = k.url; kaartB.target = '_blank'; kaartB.rel = 'noopener';
+          rijB.appendChild(kaartB);
+        });
       tekstB.appendChild(rijB);
       grid.appendChild(tekstB);
 
