@@ -43,20 +43,46 @@ Zet de sleutel nooit in de code — hij hoort alleen in Vercel te staan.
 
 ## Kerstdiner-reservering
 
-Zwevende knop rechtsonder op elke pagina, met een paneel dat van rechts
-inschuift. Bestaat uit drie bestanden:
+Zwevende knop rechtsonder op elke pagina, die een popup in dezelfde hoek
+opent. Bestaat uit drie bestanden:
 
 - `assets/js/kerst-reservering.js` — alle instellingen staan bovenaan in
-  het object `KERST`: datums, menu's, prijzen, openingstijden,
-  reserveringstijden, landnummers en de privacylink.
+  het object `KERST`: datums, tijdsloten, menu's, prijzen, landnummers,
+  de privacylink en welke sfeer-onderdelen aan staan.
 - `assets/css/kerst-reservering.css` — de opmaak.
-- `api/reserve.js` — endpoint dat twee mails stuurt via Resend (naar de
-  zaak en een bevestiging naar de gast). Gebruikt dezelfde
-  `RESEND_API_KEY`, `MAIL_TO` en `MAIL_FROM` als `/api/send`.
+- `api/reserve.js` — `GET` geeft de vrije plaatsen terug, `POST` legt een
+  aanvraag vast en stuurt twee mails via Resend (naar de zaak en een
+  bevestiging naar de gast). Gebruikt dezelfde `RESEND_API_KEY`,
+  `MAIL_TO` en `MAIL_FROM` als `/api/send`.
 
 Er hoort **één menu per datum**. Staan er twee menu's op dezelfde dag, dan
 meldt de console dat en wordt alleen het eerste gebruikt.
 
-De knop verdwijnt vanzelf na de datum in `KERST.toonTot`. Het hele
-onderdeel weghalen: de twee regels per pagina verwijderen plus de drie
-bestanden hierboven.
+### Plaatsen tellen
+
+Drie tijdsloten van 30 personen, ingesteld in `KERST.shifts` (frontend) en in
+`SHIFTS` bovenaan `api/reserve.js` (server, die rekent zelf na). Houd die twee
+gelijk — de server gebruikt altijd zijn eigen lijst.
+
+Het tellen gebruikt **Vercel KV** (Upstash Redis). Koppel die in Vercel onder
+**Storage → KV**; dat zet `KV_REST_API_URL` en `KV_REST_API_TOKEN` vanzelf
+klaar. Een losse Upstash-database werkt ook, met
+`UPSTASH_REDIS_REST_URL` en `UPSTASH_REDIS_REST_TOKEN`.
+
+Staan die variabelen er **niet**, dan kan de site niet tellen. Hij toont dan
+geen aantallen en weigert niets — liever niets beloven dan iets onwaars. In de
+mail naar de zaak staat dan `LET OP: de site telt niet mee`.
+
+De stand staat per dag en per tijdslot onder `kerst:JJJJ-MM-DD:shift-N`, te
+corrigeren via de Upstash-console. Mislukt de mail naar de zaak, dan worden de
+plaatsen automatisch teruggegeven.
+
+### Kerstsfeer
+
+Lint bovenaan, sneeuw, kerstlogo, badge in de hero, sneeuwrand op de footer en
+het blok op de homepage. Staat in `KERST.sfeer`, per onderdeel uit te zetten.
+
+Alles verdwijnt vanzelf na de datum in `KERST.toonTot`. **Het hele
+kerstonderdeel weghalen:** de twee regels per pagina, de drie bestanden
+hierboven en `assets/img/logo-kerst.png` plus `assets/img/kerstmenu.jpg`.
+`styles.css`, `main.js` en de pagina-inhoud zijn voor kerst niet gewijzigd.

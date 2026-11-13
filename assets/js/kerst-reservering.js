@@ -88,7 +88,7 @@
         id: 'kerst-23',
         datums: ['2026-12-23'],
         naam: 'Kerstmenu 23 december',
-        tekst: 'Menu van 23 december volgt.',
+        tekst: 'Informatie pas later beschikbaar.',
         afbeelding: 'assets/img/keuken-1.jpg',
         prijs: null,
         prijsKind: null,
@@ -98,7 +98,7 @@
         id: 'kerst-24',
         datums: ['2026-12-24'],
         naam: 'Kerstmenu 24 december',
-        tekst: 'Menu van kerstavond volgt.',
+        tekst: 'Informatie pas later beschikbaar.',
         afbeelding: 'assets/img/keuken-3.jpg',
         prijs: null,
         prijsKind: null,
@@ -108,7 +108,7 @@
         id: 'kerst-27',
         datums: ['2026-12-27'],
         naam: 'Kerstmenu 27 december',
-        tekst: 'Menu van 27 december volgt.',
+        tekst: 'Informatie pas later beschikbaar.',
         afbeelding: 'assets/img/keuken-2.jpg',
         prijs: null,
         prijsKind: null,
@@ -259,8 +259,33 @@
     shiftId: KERST.shifts[0].id,
     taal: 'nl',
     bezig: false,
-    aanvraagId: null
+    aanvraagId: null,
+    /* null = nog niet opgehaald of de server telt niet mee. In dat geval
+       tonen we geen aantallen: liever niets zeggen dan iets onwaars. */
+    vrij: null
   };
+
+  /* Hoeveel plaatsen zijn er nog vrij in het gekozen slot? */
+  function vrijNu() {
+    if (!staat.vrij || !staat.vrij[staat.datum]) return null;
+    var n = staat.vrij[staat.datum][staat.shiftId];
+    return typeof n === 'number' ? n : null;
+  }
+
+  function haalBeschikbaarheid() {
+    if (!window.fetch) return;
+    fetch(KERST.endpoint, { headers: { 'Accept': 'application/json' } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data || !data.tellerAan || !data.vrij) return;
+        staat.vrij = data.vrij;
+        bouwKeuze();
+        bouwSamenvatting();
+      })
+      .catch(function (err) {
+        console.error('Beschikbaarheid ophalen mislukt:', err && err.message);
+      });
+  }
 
   var ICOON_AGENDA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"' +
     ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
@@ -319,6 +344,16 @@
 
   /* ---------- stap 1: personen, datum, shift ---------- */
   function bouwKeuze() {
+    /* Staat er een vol slot gekozen (bijvoorbeeld na een datumwissel), spring
+       dan naar het eerste slot waar nog plek is. */
+    if (staat.vrij && staat.vrij[staat.datum]) {
+      var dag = staat.vrij[staat.datum];
+      if (dag[staat.shiftId] === 0) {
+        for (var i = 0; i < KERST.shifts.length; i++) {
+          if (dag[KERST.shifts[i].id] > 0) { staat.shiftId = KERST.shifts[i].id; break; }
+        }
+      }
+    }
     vakKeuze.innerHTML = '';
     vakKeuze.appendChild(el('h3', 'kerst-stap__titel', 'Jouw reservering'));
 
@@ -352,15 +387,33 @@
     vK.appendChild(inpK);
     vK.appendChild(el('span', 'kerst-hint', 'Kindertarief'));
 
+    /* In het rood onder het aantal: hoeveel er nog vrij is in dit slot. */
+    var vrijRegel = el('span', 'kerst-vrij');
+    vP.appendChild(vrijRegel);
+
     rij2.appendChild(vP); rij2.appendChild(vK);
 
+    function toonVrij() {
+      var v = vrijNu();
+      if (v === null) { vrijRegel.textContent = ''; return; }
+      vrijRegel.classList.toggle('kerst-vrij--vol', v === 0);
+      vrijRegel.textContent = v === 0
+        ? 'Dit tijdslot is vol'
+        : 'Nog ' + v + (v === 1 ? ' plek' : ' plekken') + ' beschikbaar';
+    }
+
     function zetAantallen(p, k) {
-      p = Math.max(KERST.personen.min, Math.min(KERST.personen.max, p || KERST.personen.min));
+      /* Nooit meer personen dan er nog in het slot passen. */
+      var v = vrijNu();
+      var bovengrens = v === null ? KERST.personen.max
+        : Math.max(KERST.personen.min, Math.min(KERST.personen.max, v));
+      p = Math.max(KERST.personen.min, Math.min(bovengrens, p || KERST.personen.min));
       k = Math.max(0, Math.min(p, isNaN(k) ? 0 : k));   // nooit meer kinderen dan personen
       staat.personen = p; staat.kinderen = k;
-      inp.value = p; inpK.value = k; inpK.max = p;
+      inp.value = p; inpK.value = k; inpK.max = p; inp.max = bovengrens;
       min.disabled = p <= KERST.personen.min;
-      plus.disabled = p >= KERST.personen.max;
+      plus.disabled = p >= bovengrens;
+      toonVrij();
       bouwSamenvatting();
     }
     min.addEventListener('click', function () { zetAantallen(staat.personen - 1, staat.kinderen); });
@@ -385,6 +438,7 @@
     });
     selD.addEventListener('change', function () {
       staat.datum = selD.value;
+      bouwKeuze();      // beschikbaarheid en grenzen verschillen per dag
       bouwMenus();
       bouwSamenvatting();
     });
@@ -400,12 +454,25 @@
       b.setAttribute('aria-pressed', s.id === staat.shiftId ? 'true' : 'false');
       b.appendChild(el('span', 'kerst-shift__tijd', s.van + ' – ' + s.tot));
       if (s.naam) b.appendChild(el('span', 'kerst-shift__naam', s.naam));
+
+      var vrijSlot = staat.vrij && staat.vrij[staat.datum]
+        ? staat.vrij[staat.datum][s.id] : null;
+      if (typeof vrijSlot === 'number') {
+        b.appendChild(el('span', 'kerst-shift__vrij',
+          vrijSlot === 0 ? 'vol' : vrijSlot + ' vrij'));
+        if (vrijSlot === 0) b.disabled = true;
+      }
+
       b.addEventListener('click', function () {
+        if (b.disabled) return;
         staat.shiftId = s.id;
         shifts.querySelectorAll('.kerst-shift').forEach(function (x) {
           x.setAttribute('aria-pressed', 'false');
         });
         b.setAttribute('aria-pressed', 'true');
+        /* Opnieuw opbouwen: het aantal personen moet mee binnen de grens
+           van het nieuwe slot, en de rode regel moet bijwerken. */
+        bouwKeuze();
         bouwSamenvatting();
       });
       shifts.appendChild(b);
@@ -720,7 +787,11 @@
         if (!r.ok) {
           console.error('POST ' + KERST.endpoint + ' faalde —', r.status, r.statusText,
                         '· antwoord:', ruw.slice(0, 300));
-          throw new Error(data.error || ('HTTP ' + r.status));
+          var fout = new Error(data.error || ('HTTP ' + r.status));
+          /* 409 = het slot zat vol terwijl de gast het formulier invulde.
+             Dan is de melding van de server zelf het nuttigst. */
+          fout.vanServer = r.status === 409 || r.status === 400;
+          throw fout;
         }
         return data;
       });
@@ -741,10 +812,15 @@
       staat.aanvraagId = null;
     }).catch(function (err) {
       console.error('Kerstreservering versturen mislukt:', err && err.message);
-      toonMelding('err', [
-        'We konden je aanvraag niet bij ons krijgen. Probeer het zo nog eens, of bel ons ' +
-        'op 06 16 05 01 92 — dan regelen we het meteen.'
-      ]);
+      if (err && err.vanServer) {
+        toonMelding('err', [err.message, 'Kies een ander tijdslot of een andere dag.']);
+        haalBeschikbaarheid();     // de aantallen zijn verouderd
+      } else {
+        toonMelding('err', [
+          'We konden je aanvraag niet bij ons krijgen. Probeer het zo nog eens, of bel ons ' +
+          'op 06 16 05 01 92 — dan regelen we het meteen.'
+        ]);
+      }
     }).then(function () {
       staat.bezig = false;
       knopVerstuur.disabled = false;
@@ -799,6 +875,7 @@
   bouwMenus();
   bouwSamenvatting();
   bouwContact();
+  haalBeschikbaarheid();
 
   /* ---------- badge in de hero ---------- */
   /* Boven de ondertitel, zodat het eerste wat je ziet de kerstactie is

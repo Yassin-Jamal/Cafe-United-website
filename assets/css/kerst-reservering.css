@@ -343,3 +343,14 @@
   -webkit-mask-size: 240px 100%; mask-size: 240px 100%;
   -webkit-mask-repeat: repeat-x; mask-repeat: repeat-x;
 }
+
+/* ---------- Beschikbaarheid ---------- */
+.kerst-vrij { font-size: .8rem; font-weight: 700; color: var(--kerst-rood); }
+.kerst-vrij--vol { color: var(--kerst-rood-diep); }
+.kerst-vrij:empty { display: none; }
+
+.kerst-shift__vrij { font-size: .74rem; font-weight: 700; color: var(--kerst-rood);
+  margin-left: auto; white-space: nowrap; }
+.kerst-shift__naam + .kerst-shift__vrij { margin-left: 10px; }
+.kerst-shift:disabled { opacity: .5; cursor: not-allowed; background: #F4F2EE; }
+.kerst-shift:disabled:hover { border-color: var(--line); }
