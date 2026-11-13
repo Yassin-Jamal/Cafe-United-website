@@ -1,0 +1,248 @@
+/* ============================================================
+   KERSTDINER — zwevende knop + reserveringspaneel
+   Staat los van styles.css zodat het hele onderdeel in één keer
+   weg kan als het kerstseizoen voorbij is: verwijder dit bestand,
+   assets/js/kerst-reservering.js en de twee regels per pagina.
+   Erft de tokens (--green-deep, --ff-display, …) uit styles.css.
+   ============================================================ */
+
+:root {
+  --kerst-rood:      #A4161A;   /* wit hierop = 8.1:1 */
+  --kerst-rood-diep: #7C1013;
+  --kerst-rood-zacht:#FBE9E9;
+  --kerst-groen:     #1B4332;
+}
+
+/* ---------- Zwevende knop ---------- */
+/* z-index 100: boven de pagina, onder het mobiele menu (120), zodat de
+   knop achter de veil verdwijnt zodra dat menu opengaat. */
+.kerst-fab {
+  position: fixed; right: clamp(14px, 2.5vw, 26px); bottom: clamp(14px, 2.5vw, 26px);
+  z-index: 100;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 22px; border: 0; border-radius: 999px;
+  background: var(--kerst-rood); color: #fff; cursor: pointer;
+  font-family: var(--ff-display); font-size: 1rem; font-weight: 600; line-height: 1;
+  box-shadow: 0 10px 28px rgba(124, 16, 19, .34);
+  transition: transform .2s var(--ease), background-color .25s var(--ease),
+              box-shadow .25s var(--ease), opacity .25s var(--ease);
+}
+.kerst-fab:hover { background: var(--kerst-rood-diep); transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(124, 16, 19, .42); }
+.kerst-fab:active { transform: translateY(0); }
+.kerst-fab:focus-visible { outline: 3px solid var(--kerst-rood); outline-offset: 3px; }
+.kerst-fab svg { width: 20px; height: 20px; flex: none; }
+.kerst-fab[hidden] { display: none; }
+/* Terwijl het paneel openstaat heeft de knop geen functie meer. */
+.kerst-fab.is-weg { opacity: 0; pointer-events: none; transform: translateY(8px); }
+
+@media (max-width: 480px) {
+  /* Alleen het korte label past hier nog naast het icoon. */
+  .kerst-fab { padding: 13px 18px; font-size: .94rem; }
+  .kerst-fab__lang { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kerst-fab, .kerst-fab:hover { transition: none; transform: none; }
+}
+
+/* ---------- Paneel ---------- */
+.kerst-paneel { position: fixed; inset: 0; z-index: 140; }
+.kerst-paneel[hidden] { display: none; }
+
+.kerst-paneel__veil {
+  position: absolute; inset: 0; background: rgba(23, 28, 20, .55);
+  opacity: 0; transition: opacity .3s var(--ease);
+}
+.kerst-paneel.is-open .kerst-paneel__veil { opacity: 1; }
+
+.kerst-paneel__blad {
+  position: absolute; inset: 0 0 0 auto;
+  width: min(440px, 100%);
+  background: var(--cream, #FFF8EC);
+  display: flex; flex-direction: column;
+  box-shadow: -18px 0 48px rgba(23, 28, 20, .26);
+  transform: translateX(100%);
+  transition: transform .34s var(--ease);
+}
+.kerst-paneel.is-open .kerst-paneel__blad { transform: translateX(0); }
+@media (prefers-reduced-motion: reduce) {
+  .kerst-paneel__veil, .kerst-paneel__blad { transition: none; }
+}
+
+.kerst-kop {
+  flex: none; background: var(--kerst-rood); color: #fff;
+  padding: 18px 20px; display: flex; align-items: flex-start; gap: 14px;
+}
+.kerst-kop h2 { margin: 0; font-size: 1.22rem; color: #fff; line-height: 1.2; }
+.kerst-kop p { margin: 5px 0 0; font-size: .86rem; color: rgba(255,255,255,.88); }
+.kerst-kop__sluit {
+  margin-left: auto; flex: none; width: 36px; height: 36px; display: grid; place-items: center;
+  border: 0; border-radius: 50%; cursor: pointer;
+  background: rgba(255,255,255,.16); color: #fff;
+  transition: background-color .2s var(--ease);
+}
+.kerst-kop__sluit:hover { background: rgba(255,255,255,.3); }
+.kerst-kop__sluit:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.kerst-kop__sluit svg { width: 18px; height: 18px; }
+
+/* Het enige dat scrollt; kop en voet blijven staan. */
+.kerst-body {
+  flex: 1 1 auto; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding: 20px; display: grid; gap: 22px; align-content: start;
+}
+
+.kerst-stap__titel {
+  font-family: var(--ff-display); font-weight: 600; font-size: 1rem;
+  color: var(--green-deep); margin: 0 0 10px;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+
+/* ---------- Velden ---------- */
+.kerst-veld { display: grid; gap: 6px; }
+.kerst-veld > label, .kerst-fieldset > legend {
+  font-size: .84rem; font-weight: 700; color: var(--ink); padding: 0;
+}
+.kerst-veld input, .kerst-veld select, .kerst-veld textarea {
+  width: 100%; font: inherit; font-size: .95rem; color: var(--ink);
+  background: #fff; border: 1px solid var(--line-field, #7E8B73);
+  border-radius: var(--radius-s, 12px); padding: 11px 13px;
+}
+.kerst-veld textarea { min-height: 84px; resize: vertical; }
+.kerst-veld input:focus, .kerst-veld select:focus, .kerst-veld textarea:focus {
+  outline: 2px solid var(--kerst-rood); outline-offset: 1px; border-color: var(--kerst-rood);
+}
+.kerst-veld--fout input, .kerst-veld--fout select, .kerst-veld--fout textarea,
+.kerst-veld--fout .kerst-tel { border-color: var(--kerst-rood); }
+.kerst-fout { font-size: .8rem; color: var(--kerst-rood-diep); font-weight: 600; }
+.kerst-fout:empty { display: none; }
+.kerst-req { color: var(--kerst-rood); }
+
+/* Aantal personen: knoppen eromheen, zodat het op mobiel met één duim kan. */
+.kerst-aantal { display: flex; align-items: stretch; gap: 8px; }
+.kerst-aantal button {
+  flex: none; width: 46px; border: 1px solid var(--line-field, #7E8B73);
+  border-radius: var(--radius-s, 12px); background: #fff; cursor: pointer;
+  font-size: 1.3rem; line-height: 1; color: var(--green-deep);
+}
+.kerst-aantal button:hover:not(:disabled) { background: var(--green-soft); }
+.kerst-aantal button:disabled { opacity: .4; cursor: default; }
+.kerst-aantal input { text-align: center; font-weight: 700; }
+
+/* Telefoon: landcode + nummer als één geheel. */
+.kerst-tel { display: flex; gap: 8px; }
+.kerst-tel select { flex: none; width: 36%; min-width: 108px; }
+
+/* ---------- Infoknop en popover ---------- */
+.kerst-info { position: relative; display: inline-flex; }
+.kerst-info__knop {
+  width: 20px; height: 20px; border-radius: 50%; border: 0; cursor: pointer;
+  background: var(--green-deep); color: #fff;
+  font-family: var(--ff-body); font-size: .72rem; font-weight: 800; line-height: 20px;
+  padding: 0; text-align: center;
+}
+.kerst-info__knop:hover { background: var(--green-dark); }
+.kerst-info__knop:focus-visible { outline: 2px solid var(--kerst-rood); outline-offset: 2px; }
+.kerst-info__pop {
+  position: absolute; top: calc(100% + 9px); left: 50%; transform: translateX(-50%);
+  width: min(280px, 78vw); z-index: 3;
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius-s, 12px);
+  box-shadow: 0 14px 32px rgba(23, 28, 20, .18);
+  padding: 13px 15px; font-size: .84rem; line-height: 1.55; color: var(--ink-soft);
+  font-weight: 400; text-align: left;
+}
+.kerst-info__pop[hidden] { display: none; }
+/* Tegen de rechterrand van het paneel schuift de popover naar binnen. */
+.kerst-info__pop--links { left: auto; right: 0; transform: none; }
+.kerst-info__talen { display: flex; gap: 6px; margin-bottom: 9px; }
+.kerst-info__talen button {
+  border: 1px solid var(--line); background: #fff; cursor: pointer;
+  border-radius: 999px; padding: 3px 10px; font-size: .74rem; font-weight: 700;
+  color: var(--ink-soft); font-family: var(--ff-body);
+}
+.kerst-info__talen button[aria-pressed="true"] {
+  background: var(--green-deep); border-color: var(--green-deep); color: #fff;
+}
+
+/* ---------- Menukaarten ---------- */
+/* Eigen scrollgebied: bij meerdere kaarten blijft de rest van het
+   formulier op zijn plek staan. */
+.kerst-menus { display: grid; gap: 10px; max-height: 330px; overflow-y: auto; padding-right: 2px; }
+.kerst-menu {
+  display: grid; grid-template-columns: 74px 1fr; gap: 12px; text-align: left;
+  width: 100%; padding: 10px; cursor: pointer;
+  background: #fff; border: 2px solid var(--line); border-radius: var(--radius-s, 12px);
+  font: inherit; transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
+}
+.kerst-menu:hover:not(:disabled) { border-color: var(--kerst-rood); }
+.kerst-menu[aria-pressed="true"] {
+  border-color: var(--kerst-rood); background: var(--kerst-rood-zacht);
+  box-shadow: 0 6px 18px rgba(124, 16, 19, .14);
+}
+.kerst-menu:disabled { opacity: .45; cursor: not-allowed; }
+.kerst-menu img {
+  width: 74px; height: 74px; object-fit: cover; border-radius: 9px; display: block;
+  background: var(--sand, #F5E5C8);
+}
+.kerst-menu__naam { font-family: var(--ff-display); font-weight: 600; color: var(--green-deep);
+  font-size: .98rem; }
+.kerst-menu__dag { font-size: .76rem; font-weight: 700; color: var(--kerst-rood-diep);
+  text-transform: uppercase; letter-spacing: .06em; margin-bottom: 2px; }
+.kerst-menu__tekst { font-size: .84rem; color: var(--ink-soft); margin: 3px 0 0; line-height: 1.5; }
+.kerst-menu__prijs { font-family: var(--ff-display); font-weight: 700; color: var(--kerst-rood-diep);
+  margin-top: 5px; font-size: .92rem; }
+/* Zichtbaar merkteken zolang de echte menugegevens nog niet ingevuld zijn. */
+.kerst-menu__todo {
+  display: inline-block; margin-top: 5px; padding: 2px 8px; border-radius: 999px;
+  background: #FFE9B8; color: #6B4A00; font-size: .7rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .05em;
+}
+.kerst-leeg { font-size: .88rem; color: var(--ink-soft); margin: 0; }
+
+/* ---------- Samenvatting ---------- */
+.kerst-sam {
+  background: var(--green-soft); border-radius: var(--radius-s, 12px); padding: 15px 17px;
+}
+.kerst-sam dl { display: grid; grid-template-columns: auto auto; gap: 7px 14px; margin: 0;
+  font-size: .9rem; }
+.kerst-sam dt { color: var(--ink-soft); }
+.kerst-sam dd { margin: 0; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.kerst-sam__totaal { border-top: 1px solid rgba(62,107,34,.25); margin-top: 11px; padding-top: 11px;
+  display: flex; justify-content: space-between; align-items: baseline; }
+.kerst-sam__totaal span { font-family: var(--ff-display); font-weight: 600; color: var(--green-deep); }
+.kerst-sam__totaal strong { font-family: var(--ff-display); font-size: 1.22rem; color: var(--kerst-rood-diep);
+  font-variant-numeric: tabular-nums; }
+
+/* ---------- Instemming, voet, meldingen ---------- */
+.kerst-akkoord { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start;
+  font-size: .86rem; color: var(--ink-soft); line-height: 1.5; }
+.kerst-akkoord input { width: 19px; height: 19px; margin: 2px 0 0; accent-color: var(--kerst-rood); }
+
+.kerst-voet { flex: none; padding: 15px 20px; background: #fff;
+  border-top: 1px solid var(--line); display: grid; gap: 9px; }
+.kerst-verstuur {
+  width: 100%; padding: 15px 20px; border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--kerst-rood); color: #fff;
+  font-family: var(--ff-display); font-size: 1rem; font-weight: 600; line-height: 1;
+}
+.kerst-verstuur:hover:not(:disabled) { background: var(--kerst-rood-diep); }
+.kerst-verstuur:disabled { opacity: .62; cursor: progress; }
+.kerst-voet__klein { margin: 0; font-size: .78rem; color: var(--ink-soft); text-align: center; }
+
+.kerst-melding { border-radius: var(--radius-s, 12px); padding: 13px 15px; font-size: .9rem; }
+.kerst-melding[hidden] { display: none; }
+.kerst-melding--ok  { background: var(--green-soft); color: var(--green-dark); }
+.kerst-melding--err { background: #FFE0D2; color: #8E3410; }
+.kerst-melding p { margin: 0; }
+.kerst-melding p + p { margin-top: 8px; }
+
+/* Honeypot: mensen zien dit veld nooit. */
+.kerst-pot { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+@media (max-width: 480px) {
+  .kerst-paneel__blad { width: 100%; }
+  .kerst-body { padding: 16px; gap: 18px; }
+  /* Meer ruimte onder het laatste veld, zodat het toetsenbord op een
+     telefoon niet over de verstuurknop of de notities heen valt. */
+  .kerst-body { padding-bottom: 28px; }
+  .kerst-menus { max-height: none; }
+}

@@ -40,3 +40,23 @@ geverifieerd zijn (SPF/DKIM), anders weigert Resend de mail.
 "beantwoorden" in Gmail gaat rechtstreeks naar de gast.
 
 Zet de sleutel nooit in de code — hij hoort alleen in Vercel te staan.
+
+## Kerstdiner-reservering
+
+Zwevende knop rechtsonder op elke pagina, met een paneel dat van rechts
+inschuift. Bestaat uit drie bestanden:
+
+- `assets/js/kerst-reservering.js` — alle instellingen staan bovenaan in
+  het object `KERST`: datums, menu's, prijzen, openingstijden,
+  reserveringstijden, landnummers en de privacylink.
+- `assets/css/kerst-reservering.css` — de opmaak.
+- `api/reserve.js` — endpoint dat twee mails stuurt via Resend (naar de
+  zaak en een bevestiging naar de gast). Gebruikt dezelfde
+  `RESEND_API_KEY`, `MAIL_TO` en `MAIL_FROM` als `/api/send`.
+
+Er hoort **één menu per datum**. Staan er twee menu's op dezelfde dag, dan
+meldt de console dat en wordt alleen het eerste gebruikt.
+
+De knop verdwijnt vanzelf na de datum in `KERST.toonTot`. Het hele
+onderdeel weghalen: de twee regels per pagina verwijderen plus de drie
+bestanden hierboven.
