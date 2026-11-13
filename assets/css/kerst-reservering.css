@@ -373,3 +373,8 @@
 .kerst-kop__sluit { margin-left: 8px; }
 
 .kerst-menu__beeld { display: block; }
+
+.kerst-taalvak { margin-left: auto; flex: none; display: grid; justify-items: center; gap: 3px; }
+.kerst-taalvak .kerst-taal { margin-left: 0; }
+.kerst-taalvak__uitleg { font-size: .62rem; color: rgba(255,255,255,.8);
+  letter-spacing: .02em; white-space: nowrap; }

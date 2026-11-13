@@ -77,11 +77,11 @@
            >>> NA TE LEZEN <<< de Papiamentse tekst is overgenomen van de
            kaart; laat iemand die de taal spreekt er even naar kijken. */
         talen: {
-          nl: {
-            tekst: 'Voorgerechten: sùlt, ayaka en Christmas glazed ham. Hoofdgerecht naar ' +
-                   'keuze: garlic shrimp & salmon, roasted chicken met béchamelsaus, ' +
-                   'tenderloin steak met champignonsaus of stewed beef. ' +
-                   'Dessert: flan of stained glass cake.',
+          en: {
+            tekst: 'Appetizers: sùlt, ayaka and Christmas glazed ham. Main course (pick one): ' +
+                   'garlic shrimp & salmon, roasted chicken in béchamel sauce, tenderloin ' +
+                   'steak with mushroom sauce, or stewed beef. ' +
+                   'Dessert: flan or stained glass cake.',
             kaart: 'assets/img/kerstmenu.jpg'
           },
           pap: {
@@ -191,7 +191,7 @@
   }
   controleMenus();
 
-  var TAALNAAM = { nl: 'Nederlands', pap: 'Papiamentu' };
+  var TAALNAAM = { en: 'Engels', nl: 'Nederlands', pap: 'Papiamentu' };
 
   /* Welke talen heeft dit menu? Leeg = geen vertaling ingesteld. */
   function menuTalen(menu) {
@@ -300,7 +300,8 @@
     kinderen: 0,
     datum: KERST.datums[0],
     shiftId: KERST.shifts[0].id,
-    taal: 'nl',
+    taal: 'en',          // taal van het menu: 'en' of 'pap'
+    infoTaal: 'nl',      // taal van het uitlegvenstertje: 'nl' of 'pap'
     bezig: false,
     aanvraagId: null,
     /* null = nog niet opgehaald of de server telt niet mee. In dat geval
@@ -364,9 +365,14 @@
     '      <h2 id="kerst-titel">Kerstdiner reserveren</h2>' +
     '      <p>23 t/m 27 december</p>' +
     '    </div>' +
-    '    <div class="kerst-taal" role="group" aria-label="Taal van het menu">' +
-    '      <button type="button" data-taal="nl" aria-pressed="true">NL</button>' +
-    '      <button type="button" data-taal="pap" aria-pressed="false">PAP</button>' +
+    '    <div class="kerst-taalvak">' +
+    '      <div class="kerst-taal" role="group" aria-label="Taal van het menu">' +
+    '        <button type="button" data-taal="en" aria-pressed="true">EN</button>' +
+    '        <button type="button" data-taal="pap" aria-pressed="false">PAP</button>' +
+    '      </div>' +
+    /* De knop raakt alleen het menu; de rest van het formulier blijft
+       Nederlands, en dat moet je niet hoeven raden. */
+    '      <span class="kerst-taalvak__uitleg">taal van het menu</span>' +
     '    </div>' +
     '    <button class="kerst-kop__sluit" type="button" data-sluit aria-label="Sluiten">' +
           ICOON_KRUIS + '</button>' +
@@ -557,14 +563,14 @@
     popover.hidden = true;
 
     var talen = el('div', 'kerst-info__talen');
-    var tekstP = el('p', null, KERST.infoTekst[staat.taal]);
+    var tekstP = el('p', null, KERST.infoTekst[staat.infoTaal]);
     tekstP.style.margin = '0';
     [['nl', 'Nederlands'], ['pap', 'Papiamentu']].forEach(function (t) {
       var b = el('button', null, t[1]);
       b.type = 'button';
-      b.setAttribute('aria-pressed', staat.taal === t[0] ? 'true' : 'false');
+      b.setAttribute('aria-pressed', staat.infoTaal === t[0] ? 'true' : 'false');
       b.addEventListener('click', function () {
-        staat.taal = t[0];
+        staat.infoTaal = t[0];
         tekstP.textContent = KERST.infoTekst[t[0]];
         talen.querySelectorAll('button').forEach(function (x) {
           x.setAttribute('aria-pressed', 'false');
@@ -594,7 +600,7 @@
 
     vakMenu.appendChild(el('p', 'kerst-menu-uitleg', staat.taal === 'pap'
       ? 'Primi riba e karchi pa miré grandi.'
-      : 'Tik op de kaart om hem groot te bekijken.'));
+      : 'Tap the card to view it full size.'));
 
     var lijst = el('div', 'kerst-menus');
 
@@ -627,15 +633,16 @@
     tekstVak.appendChild(el('div', 'kerst-menu__naam', menu.naam));
     tekstVak.appendChild(el('p', 'kerst-menu__tekst', menuTekst(menu)));
     if (menu.prijs != null) {
-      var prijs = euro(menu.prijs) + (staat.taal === 'pap' ? ' pa persona' : ' p.p.');
+      var prijs = euro(menu.prijs) + (staat.taal === 'pap' ? ' pa persona' : ' per person');
       if (menu.prijsKind != null) {
-        prijs += ' · ' + euro(menu.prijsKind) + (staat.taal === 'pap' ? ' pa mucha' : ' per kind');
+        prijs += ' · ' + euro(menu.prijsKind) +
+          (staat.taal === 'pap' ? ' pa mucha' : ' per child');
       }
       tekstVak.appendChild(el('div', 'kerst-menu__prijs', prijs));
     }
     if (kaartUrlNu) {
       var a = el('a', 'kerst-menu__link',
-        staat.taal === 'pap' ? 'Wak e karchi' : 'Bekijk de kaart');
+        staat.taal === 'pap' ? 'Wak e karchi' : 'View the card');
       a.href = kaartUrlNu; a.target = '_blank'; a.rel = 'noopener';
       tekstVak.appendChild(a);
     }
