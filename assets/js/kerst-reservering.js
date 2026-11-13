@@ -16,8 +16,17 @@
        kerstblok vanzelf van de site. */
     toonTot: '2026-12-27',
 
-    /* Lichte kerstsfeer: lint bovenaan, kerstlogo, blok op de homepage. */
-    sfeer: { lint: true, logo: true, homepageBlok: true },
+    /* Lichte kerstsfeer. Elk onderdeel los uit te zetten.
+       `vlokken` is het aantal sneeuwvlokken; 0 zet de sneeuw uit. */
+    sfeer: {
+      lint: true,
+      logo: true,
+      homepageBlok: true,
+      sneeuw: true,
+      vlokken: 34,
+      heroBadge: true,
+      footerRand: true
+    },
 
     endpoint: '/api/reserve',
 
@@ -206,6 +215,40 @@
     });
     var icon = document.querySelector('link[rel="icon"]');
     if (icon) icon.href = 'assets/img/logo-kerst.png';
+  }
+
+  /* Sneeuw. Elke vlok krijgt eigen maat, snelheid, startpunt en drift, zodat
+     het niet als een raster valt. Alleen transform en opacity animeren, dus
+     het blijft op de compositor en kost geen layout per frame. */
+  if (KERST.sfeer.sneeuw && KERST.sfeer.vlokken > 0 &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var sneeuw = el('div', 'kerst-sneeuw');
+    sneeuw.setAttribute('aria-hidden', 'true');
+    for (var v = 0; v < KERST.sfeer.vlokken; v++) {
+      var vlok = el('span', 'kerst-vlok');
+      var maat = 3.5 + Math.random() * 5;
+      vlok.style.width = maat.toFixed(1) + 'px';
+      vlok.style.height = maat.toFixed(1) + 'px';
+      vlok.style.left = (Math.random() * 100).toFixed(2) + '%';
+      vlok.style.opacity = (0.55 + Math.random() * 0.4).toFixed(2);
+      vlok.style.setProperty('--drift', (Math.random() * 90 - 45).toFixed(0) + 'px');
+      vlok.style.animationDuration = (9 + Math.random() * 12).toFixed(1) + 's';
+      /* Negatieve vertraging: de vlokken staan al verspreid over het scherm
+         in plaats van allemaal tegelijk bovenaan te beginnen. */
+      vlok.style.animationDelay = '-' + (Math.random() * 20).toFixed(1) + 's';
+      sneeuw.appendChild(vlok);
+    }
+    document.body.appendChild(sneeuw);
+  }
+
+  /* Sneeuwrand bovenop de footer. */
+  if (KERST.sfeer.footerRand) {
+    var footer = document.querySelector('.site-footer');
+    if (footer) {
+      var rand = el('div', 'kerst-sneeuwrand');
+      rand.setAttribute('aria-hidden', 'true');
+      footer.appendChild(rand);
+    }
   }
 
   /* ---------- paneel ---------- */
@@ -756,6 +799,24 @@
   bouwMenus();
   bouwSamenvatting();
   bouwContact();
+
+  /* ---------- badge in de hero ---------- */
+  /* Boven de ondertitel, zodat het eerste wat je ziet de kerstactie is
+     zonder dat het logo of de knoppen verschuiven. */
+  if (KERST.sfeer.heroBadge) {
+    var heroSub = document.querySelector('.hero__content .hero__sub');
+    if (heroSub) {
+      var badge = el('button', 'kerst-badge');
+      badge.type = 'button';
+      badge.innerHTML =
+        '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
+        '<path d="M12 2l2.1 4.6L19 7.3l-3.5 3.3.9 4.8L12 13.2l-4.4 2.2.9-4.8L5 7.3l4.9-.7z"/>' +
+        '<path d="M11 16h2v6h-2z"/></svg>' +
+        '<span>Kerstdiner · 23 t/m 27 december</span>';
+      badge.addEventListener('click', function () { if (pop.hidden) openen(); });
+      heroSub.parentNode.insertBefore(badge, heroSub);
+    }
+  }
 
   /* ---------- kerstblok op de homepage ---------- */
   if (KERST.sfeer.homepageBlok) {

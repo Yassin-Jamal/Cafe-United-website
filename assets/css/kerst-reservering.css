@@ -283,3 +283,63 @@
   .kerst-band__grid { grid-template-columns: 1fr; max-width: 420px; }
   .kerst-band__kaart { max-width: 260px; margin-inline: auto; }
 }
+
+/* ---------- Sneeuw ---------- */
+/* z-index 89: over de pagina-inhoud, maar onder de header (90) en de
+   zwevende knop (100), zodat niets klikbaars eronder verdwijnt.
+   pointer-events: none — je moet er dwars doorheen kunnen klikken. */
+.kerst-sneeuw {
+  position: fixed; inset: 0; z-index: 89; overflow: hidden;
+  pointer-events: none;
+}
+.kerst-vlok {
+  position: absolute; top: -12px;
+  border-radius: 50%;
+  /* Niet zuiver wit: op de crèmekleurige achtergrond van deze site is dat
+     onzichtbaar. Een koele tint met een zachte gloed leest op het licht
+     én op het donkergroen van de footer. */
+  background: #EAF2FB;
+  box-shadow: 0 0 5px rgba(118, 152, 196, .55), 0 0 0 .5px rgba(118, 152, 196, .3);
+  opacity: .9; filter: blur(.2px);
+  animation-name: kerst-val; animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+@keyframes kerst-val {
+  /* De zijwaartse drift zit in de translateX, zodat het niet als regen valt. */
+  0%   { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(var(--drift, 20px), 102vh, 0); }
+}
+/* Geen sneeuw bij voorkeur voor minder beweging; de rest van de sfeer blijft. */
+@media (prefers-reduced-motion: reduce) {
+  .kerst-sneeuw { display: none; }
+}
+
+/* ---------- Badge in de hero ---------- */
+.kerst-badge {
+  display: inline-flex; align-items: center; gap: 9px;
+  margin: 0 auto 1.1em; padding: 9px 18px;
+  border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--kerst-rood); color: #fff;
+  font-family: var(--ff-display); font-size: .88rem; font-weight: 600; line-height: 1;
+  box-shadow: 0 8px 22px rgba(124, 16, 19, .3);
+  transition: transform .2s var(--ease), background-color .25s var(--ease);
+}
+.kerst-badge:hover { background: var(--kerst-rood-diep); transform: translateY(-2px); }
+.kerst-badge:focus-visible { outline: 3px solid var(--kerst-rood); outline-offset: 3px; }
+.kerst-badge svg { width: 15px; height: 15px; flex: none; }
+@media (prefers-reduced-motion: reduce) {
+  .kerst-badge, .kerst-badge:hover { transition: none; transform: none; }
+}
+
+/* ---------- Sneeuwrand op de footer ---------- */
+/* Eigen element in plaats van ::before of ::after: die gebruikt styles.css
+   al voor het ROTTERDAM-watermerk en de scrim. */
+.kerst-sneeuwrand {
+  position: absolute; inset: -1px 0 auto 0; height: 26px; z-index: 3;
+  pointer-events: none;
+  background: var(--cream, #FFF8EC);
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 26' preserveAspectRatio='none'%3E%3Cpath d='M0 0h120v9c-6 0-9 5-15 5s-9-4-15-4-9 6-15 6-10-5-16-5-9 4-15 4-9-5-15-5-9 4-14 4-9-4-15-4z' fill='%23000'/%3E%3C/svg%3E");
+          mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 26' preserveAspectRatio='none'%3E%3Cpath d='M0 0h120v9c-6 0-9 5-15 5s-9-4-15-4-9 6-15 6-10-5-16-5-9 4-15 4-9-5-15-5-9 4-14 4-9-4-15-4z' fill='%23000'/%3E%3C/svg%3E");
+  -webkit-mask-size: 240px 100%; mask-size: 240px 100%;
+  -webkit-mask-repeat: repeat-x; mask-repeat: repeat-x;
+}
