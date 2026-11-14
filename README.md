@@ -57,6 +57,16 @@ opent. Bestaat uit drie bestanden:
 Er hoort **één menu per datum**. Staan er twee menu's op dezelfde dag, dan
 meldt de console dat en wordt alleen het eerste gebruikt.
 
+Voor 25 en 26 december staat het echte kerstmenu er, met kaart in Engels en
+Papiamentu. Voor 23, 24 en 27 december is er nog geen kaart: die drie dagen
+delen het blok `kerst-later`, dat alleen meldt dat de menugegevens later
+komen. Zodra een kaart binnen is, krijgt die dag een eigen blok zoals
+`kerstmenu` en gaat de datum uit `kerst-later`.
+
+De gast krijgt na het versturen altijd een ontvangstbevestiging per mail, met
+de aanvraag erin en de melding dat de reservering pas officieel is zodra de
+zaak heeft geantwoord. Antwoorden op die mail komt bij `MAIL_TO` terecht.
+
 ### Aanvraag, geen directe boeking
 
 De site houdt geen plaatsen bij en wijst niets af. Elke aanvraag gaat per mail

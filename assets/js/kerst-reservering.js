@@ -91,38 +91,25 @@
         prijsKind: 15
       },
       /* >>> IN TE VULLEN <<< voor 23, 24 en 27 december is nog geen kaart
-         aangeleverd. Vul naam, tekst, prijs en afbeelding in en haal
-         `tiencheck` weg; of schrap de datum uit `datums` hierboven als er
-         die dag geen kerstdiner is. */
+         aangeleverd. Zodra die er is: een eigen blok maken zoals het
+         kerstmenu hierboven (naam, talen, prijs, kaart) en de datum uit
+         `datums` hieronder halen. Is er die dag geen kerstdiner, schrap de
+         datum dan uit `KERST.datums` bovenaan. */
       {
-        id: 'kerst-23',
-        datums: ['2026-12-23'],
-        naam: 'Kerstmenu 23 december',
-        tekst: 'Informatie pas later beschikbaar.',
-        afbeelding: 'assets/img/keuken-1.jpg',
+        id: 'kerst-later',
+        datums: ['2026-12-23', '2026-12-24', '2026-12-27'],
+        nogOnbekend: true,
+        naam: 'Menu nog niet bekend',
+        talen: {
+          en: { tekst: 'The menu for this date is not available yet. Send your request ' +
+                       'anyway: we will mail you the menu and the price as soon as the ' +
+                       'kitchen has it ready.' },
+          pap: { tekst: 'E menu pa e fecha aki no ta disponibel ainda. Manda bo petishon ' +
+                        'tòg: nos ta manda bo e menu ku e preis pa mail asina kosina tin ' +
+                        'esaki klar.' }
+        },
         prijs: null,
-        prijsKind: null,
-        tiencheck: true
-      },
-      {
-        id: 'kerst-24',
-        datums: ['2026-12-24'],
-        naam: 'Kerstmenu 24 december',
-        tekst: 'Informatie pas later beschikbaar.',
-        afbeelding: 'assets/img/keuken-3.jpg',
-        prijs: null,
-        prijsKind: null,
-        tiencheck: true
-      },
-      {
-        id: 'kerst-27',
-        datums: ['2026-12-27'],
-        naam: 'Kerstmenu 27 december',
-        tekst: 'Informatie pas later beschikbaar.',
-        afbeelding: 'assets/img/keuken-2.jpg',
-        prijs: null,
-        prijsKind: null,
-        tiencheck: true
+        prijsKind: null
       }
     ],
 
@@ -517,11 +504,29 @@
 
     var menu = menuVoorDatum(staat.datum);
 
-    vakMenu.appendChild(el('p', 'kerst-menu-uitleg', staat.taal === 'pap'
-      ? 'Primi riba e karchi pa miré grandi.'
-      : 'Tap the card to view it full size.'));
+    /* Is er nog geen kaart voor deze dag, dan valt er ook niets aan te
+       tikken; de hint hoort er dan niet te staan. */
+    if (menu && !menu.nogOnbekend) {
+      vakMenu.appendChild(el('p', 'kerst-menu-uitleg', staat.taal === 'pap'
+        ? 'Primi riba e karchi pa miré grandi.'
+        : 'Tap the card to view it full size.'));
+    }
 
     var lijst = el('div', 'kerst-menus');
+
+    /* Een dag waarvan de kaart nog niet binnen is: gewoon zeggen dat de
+       menugegevens later komen, zonder nepfoto en zonder prijs. */
+    if (menu && menu.nogOnbekend) {
+      var wacht = el('div', 'kerst-menu kerst-menu--later');
+      wacht.appendChild(el('div', 'kerst-menu__dag', datumTekst(staat.datum)));
+      wacht.appendChild(el('div', 'kerst-menu__naam', staat.taal === 'pap'
+        ? 'Menu ainda no ta konosí'
+        : 'Menu not yet available'));
+      wacht.appendChild(el('p', 'kerst-menu__tekst', menuTekst(menu)));
+      lijst.appendChild(wacht);
+      vakMenu.appendChild(lijst);
+      return;
+    }
 
     if (!menu) {
       lijst.appendChild(el('p', 'kerst-leeg',
@@ -564,9 +569,6 @@
         staat.taal === 'pap' ? 'Wak e karchi' : 'View the card');
       a.href = kaartUrlNu; a.target = '_blank'; a.rel = 'noopener';
       tekstVak.appendChild(a);
-    }
-    if (menu.tiencheck) {
-      tekstVak.appendChild(el('span', 'kerst-menu__todo', 'Menugegevens nog invullen'));
     }
     kaart.appendChild(tekstVak);
     lijst.appendChild(kaart);

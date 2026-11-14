@@ -204,12 +204,13 @@
   margin-top: 4px; font-size: .88rem; }
 .kerst-menu__link { display: inline-block; margin-top: 5px; font-size: .78rem; font-weight: 700;
   color: var(--green-deep); }
-/* Zichtbaar merkteken zolang de echte menugegevens nog niet ingevuld zijn. */
-.kerst-menu__todo {
-  display: inline-block; margin-top: 5px; padding: 2px 7px; border-radius: 999px;
-  background: #FFE9B8; color: #6B4A00; font-size: .68rem; font-weight: 800;
-  text-transform: uppercase; letter-spacing: .05em;
+/* Een dag waarvan de kaart nog niet binnen is: geen afbeelding, dus ook geen
+   beeldkolom, en een rustiger rand dan bij een echt menu. */
+.kerst-menu--later {
+  grid-template-columns: 1fr; border-style: dashed; border-color: #D9C9A7;
+  background: #FFFDF7; padding: 11px 12px;
 }
+.kerst-menu--later .kerst-menu__naam { color: var(--ink-soft); }
 .kerst-leeg { font-size: .85rem; color: var(--ink-soft); margin: 0; }
 
 /* ---------- Samenvatting ---------- */

@@ -213,7 +213,8 @@ module.exports = async function handler(req, res) {
     'Beste ' + naam + ',',
     '',
     'Bedankt voor je aanvraag voor het kerstdiner bij ' + ZAAK.naam + '.',
-    'Dit is nog geen bevestigde reservering: we nemen hem door en laten zo snel',
+    'Dit is een ontvangstbevestiging, nog geen reservering: die is pas',
+    'officieel zodra wij op deze mail hebben geantwoord. We laten zo snel',
     'mogelijk weten of het rondkomt.',
     '',
     'Datum: ' + datumNet,
@@ -221,6 +222,8 @@ module.exports = async function handler(req, res) {
     'Aantal personen: ' + wie,
     'Menu: ' + (menuNaam || 'nog niet ingesteld'),
     'Totaal: ' + totaalTxt,
+    '',
+    'Klopt er iets niet? Antwoord dan gewoon op deze mail.',
     '',
     ZAAK.naam,
     ZAAK.adres,
@@ -231,8 +234,9 @@ module.exports = async function handler(req, res) {
   const naarGastHtml = `<div style="font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#26301D">
   <h2 style="color:#A4161A;margin:0 0 14px">Bedankt, ${esc(naam.split(' ')[0])}!</h2>
   <p style="margin:0 0 16px">We hebben je aanvraag voor het kerstdiner ontvangen.
-    <strong>Dit is nog geen bevestigde reservering</strong> — we nemen hem door en laten zo snel
-    mogelijk weten of het rondkomt.</p>
+    Dit is een ontvangstbevestiging, nog geen reservering:
+    <strong>die is pas officieel zodra wij op deze mail hebben geantwoord.</strong>
+    We laten zo snel mogelijk weten of het rondkomt.</p>
   <table cellpadding="0" cellspacing="0" style="border-collapse:collapse">${regelsHtml([
     ['Datum', datumNet],
     ['Tijdslot', shift],
@@ -240,6 +244,7 @@ module.exports = async function handler(req, res) {
     ['Menu', menuNaam || 'nog niet ingesteld'],
     ['Totaal', totaalTxt]
   ])}</table>
+  <p style="margin:18px 0 0;font-size:14px">Klopt er iets niet? Antwoord dan gewoon op deze mail.</p>
   <p style="margin:22px 0 0;font-size:14px;color:#5A6650">
     ${esc(ZAAK.naam)}<br>${esc(ZAAK.adres)}<br>${esc(ZAAK.telefoon)}<br>${esc(ZAAK.site)}</p>
 </div>`;
@@ -269,7 +274,10 @@ module.exports = async function handler(req, res) {
       to: [email],
       subject: `Je aanvraag voor het kerstdiner – ${ZAAK.naam}`,
       text: naarGastText,
-      html: naarGastHtml
+      html: naarGastHtml,
+      /* Antwoordt de gast op deze mail, dan komt dat bij de zaak terecht
+         en niet bij het verzendadres van het formulier. */
+      reply_to: TO
     });
   } catch (err) {
     bevestigd = false;
