@@ -80,8 +80,8 @@
             kaart: 'assets/img/kerstmenu.jpg'
           },
           pap: {
-            tekst: 'Promé plato: sult, ayaka i ham di pasku. Plato prinsipal (skohe ùn): ' +
-                   'garlic shrimp & salmon, galiña na fornu ku bechamel saixe, ' +
+            tekst: 'Promé plato: sùlt, ayaka i ham di pasku. Plato prinsipal (skohe ùn): ' +
+                   'garlic shrimp & salmon, galiña na fornu ku béchamel sauce, ' +
                    'lomito ku mushroom sauce of karni stobá. Dèsert: kesio of bolo di glas.',
             kaart: 'assets/img/kerstmenu-pap.jpg'
           }
