@@ -34,17 +34,12 @@
 
     personen: { min: 1, max: 20, start: 2 },
 
-    /* Drie shifts van 30 personen = 90 per dag.
-
-       >>> LET OP <<< de site kan NIET bijhouden hoeveel plaatsen er al
-       vergeven zijn: er is geen database, alleen e-mail. `plaatsen` staat
-       hier zodat het aantal in de mail naar de zaak meekomt en jullie zelf
-       kunnen tellen. Wil je dat de site vol-shifts echt dichtzet, dan is
-       daar opslag voor nodig — zie de notitie in de README. */
+    /* Drie tijdsloten van twee uur. De site houdt geen plaatsen bij: elke
+       aanvraag gaat per mail naar de zaak, die hem zelf bevestigt. */
     shifts: [
-      { id: 'shift-1', van: '14:00', tot: '16:30', naam: 'Middag',     plaatsen: 30 },
-      { id: 'shift-2', van: '17:00', tot: '19:30', naam: 'Vroege avond', plaatsen: 30 },
-      { id: 'shift-3', van: '20:00', tot: '21:30', naam: 'Late avond',  plaatsen: 30 }
+      { id: 'shift-1', van: '14:00', tot: '16:00', naam: 'Middag' },
+      { id: 'shift-2', van: '17:00', tot: '19:00', naam: 'Vroege avond' },
+      { id: 'shift-3', van: '20:00', tot: '22:00', naam: 'Late avond' }
     ],
 
     /* >>> TE MAKEN <<< er is nog geen privacypagina op de site. */
@@ -303,43 +298,8 @@
     taal: 'en',          // taal van het menu: 'en' of 'pap'
     infoTaal: 'nl',      // taal van het uitlegvenstertje: 'nl' of 'pap'
     bezig: false,
-    aanvraagId: null,
-    /* null = nog niet opgehaald of de server telt niet mee. In dat geval
-       tonen we geen aantallen: liever niets zeggen dan iets onwaars. */
-    vrij: null
+    aanvraagId: null
   };
-
-  /* Hoeveel plaatsen zijn er nog vrij in het gekozen slot? */
-  function vrijNu() {
-    if (!staat.vrij || !staat.vrij[staat.datum]) return null;
-    var n = staat.vrij[staat.datum][staat.shiftId];
-    return typeof n === 'number' ? n : null;
-  }
-
-  function haalBeschikbaarheid() {
-    if (!window.fetch) return;
-    fetch(KERST.endpoint, { headers: { 'Accept': 'application/json' } })
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (data) {
-        if (!data || !data.tellerAan || !data.vrij) {
-          if (data && data.reden) console.warn('Kerstteller uit:', data.reden);
-          return;
-        }
-        staat.vrij = data.vrij;
-        /* Met een werkende teller wordt de plaats bij het versturen echt
-           vastgehouden, dus mag de voetnoot dat ook zeggen. */
-        var voetnoot = pop.querySelector('[data-voetnoot]');
-        if (voetnoot) {
-          voetnoot.textContent = 'Je plek wordt meteen voor je vastgehouden. ' +
-            'De bevestiging krijg je per e-mail.';
-        }
-        bouwKeuze();
-        bouwSamenvatting();
-      })
-      .catch(function (err) {
-        console.error('Beschikbaarheid ophalen mislukt:', err && err.message);
-      });
-  }
 
   var ICOON_AGENDA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"' +
     ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
@@ -388,9 +348,9 @@
     '    </div>' +
     '  </form>' +
     '  <div class="kerst-voet">' +
-    '    <button class="kerst-verstuur" type="button" data-verstuur>Reserveren</button>' +
-    '    <p class="kerst-voet__klein" data-voetnoot>Je reservering staat pas vast zodra ' +
-    'je een bevestiging van ons hebt ontvangen.</p>' +
+    '    <button class="kerst-verstuur" type="button" data-verstuur>Aanvraag versturen</button>' +
+    '    <p class="kerst-voet__klein">Je reservering is pas officieel zodra Caf&eacute; ' +
+    'United op je mail heeft geantwoord.</p>' +
     '  </div>';
 
   document.body.appendChild(fab);
@@ -407,16 +367,6 @@
 
   /* ---------- stap 1: personen, datum, shift ---------- */
   function bouwKeuze() {
-    /* Staat er een vol slot gekozen (bijvoorbeeld na een datumwissel), spring
-       dan naar het eerste slot waar nog plek is. */
-    if (staat.vrij && staat.vrij[staat.datum]) {
-      var dag = staat.vrij[staat.datum];
-      if (dag[staat.shiftId] === 0) {
-        for (var i = 0; i < KERST.shifts.length; i++) {
-          if (dag[KERST.shifts[i].id] > 0) { staat.shiftId = KERST.shifts[i].id; break; }
-        }
-      }
-    }
     vakKeuze.innerHTML = '';
     vakKeuze.appendChild(el('h3', 'kerst-stap__titel', 'Jouw reservering'));
 
@@ -450,33 +400,15 @@
     vK.appendChild(inpK);
     vK.appendChild(el('span', 'kerst-hint', 'Kindertarief'));
 
-    /* In het rood onder het aantal: hoeveel er nog vrij is in dit slot. */
-    var vrijRegel = el('span', 'kerst-vrij');
-    vP.appendChild(vrijRegel);
-
     rij2.appendChild(vP); rij2.appendChild(vK);
 
-    function toonVrij() {
-      var v = vrijNu();
-      if (v === null) { vrijRegel.textContent = ''; return; }
-      vrijRegel.classList.toggle('kerst-vrij--vol', v === 0);
-      vrijRegel.textContent = v === 0
-        ? 'Dit tijdslot is vol'
-        : 'Nog ' + v + (v === 1 ? ' plek' : ' plekken') + ' beschikbaar';
-    }
-
     function zetAantallen(p, k) {
-      /* Nooit meer personen dan er nog in het slot passen. */
-      var v = vrijNu();
-      var bovengrens = v === null ? KERST.personen.max
-        : Math.max(KERST.personen.min, Math.min(KERST.personen.max, v));
-      p = Math.max(KERST.personen.min, Math.min(bovengrens, p || KERST.personen.min));
+      p = Math.max(KERST.personen.min, Math.min(KERST.personen.max, p || KERST.personen.min));
       k = Math.max(0, Math.min(p, isNaN(k) ? 0 : k));   // nooit meer kinderen dan personen
       staat.personen = p; staat.kinderen = k;
-      inp.value = p; inpK.value = k; inpK.max = p; inp.max = bovengrens;
+      inp.value = p; inpK.value = k; inpK.max = p;
       min.disabled = p <= KERST.personen.min;
-      plus.disabled = p >= bovengrens;
-      toonVrij();
+      plus.disabled = p >= KERST.personen.max;
       bouwSamenvatting();
     }
     min.addEventListener('click', function () { zetAantallen(staat.personen - 1, staat.kinderen); });
@@ -501,7 +433,6 @@
     });
     selD.addEventListener('change', function () {
       staat.datum = selD.value;
-      bouwKeuze();      // beschikbaarheid en grenzen verschillen per dag
       bouwMenus();
       bouwSamenvatting();
     });
@@ -518,24 +449,12 @@
       b.appendChild(el('span', 'kerst-shift__tijd', s.van + ' – ' + s.tot));
       if (s.naam) b.appendChild(el('span', 'kerst-shift__naam', s.naam));
 
-      var vrijSlot = staat.vrij && staat.vrij[staat.datum]
-        ? staat.vrij[staat.datum][s.id] : null;
-      if (typeof vrijSlot === 'number') {
-        b.appendChild(el('span', 'kerst-shift__vrij',
-          vrijSlot === 0 ? 'vol' : vrijSlot + ' vrij'));
-        if (vrijSlot === 0) b.disabled = true;
-      }
-
       b.addEventListener('click', function () {
-        if (b.disabled) return;
         staat.shiftId = s.id;
         shifts.querySelectorAll('.kerst-shift').forEach(function (x) {
           x.setAttribute('aria-pressed', 'false');
         });
         b.setAttribute('aria-pressed', 'true');
-        /* Opnieuw opbouwen: het aantal personen moet mee binnen de grens
-           van het nieuwe slot, en de rode regel moet bijwerken. */
-        bouwKeuze();
         bouwSamenvatting();
       });
       shifts.appendChild(b);
@@ -817,7 +736,6 @@
       datumTekst: datumTekst(staat.datum),
       shiftId: staat.shiftId,
       shiftTekst: s ? s.van + ' – ' + s.tot + (s.naam ? ' (' + s.naam + ')' : '') : '',
-      shiftPlaatsen: s ? s.plaatsen : null,
       menuId: menu ? menu.id : null,
       menuNaam: menu ? menu.naam : null,
       prijsPP: menu && menu.prijs != null ? menu.prijs : null,
@@ -871,15 +789,14 @@
         ', ' + lading.shiftTekst + ' met ' + lading.personen +
         (lading.personen === 1 ? ' persoon' : ' personen') + ' staat bij ons in de inbox.'));
       melding.appendChild(el('p', null,
-        'Je krijgt een bevestiging per e-mail zodra we de reservering hebben vastgelegd. ' +
-        'De aanvraag staat dus nog niet vast.'));
+        'Je reservering is pas officieel zodra Café United op je mail heeft ' +
+        'geantwoord. We laten zo snel mogelijk weten of het rondkomt.'));
       pop.insertBefore(melding, form);
       staat.aanvraagId = null;
     }).catch(function (err) {
       console.error('Kerstreservering versturen mislukt:', err && err.message);
       if (err && err.vanServer) {
-        toonMelding('err', [err.message, 'Kies een ander tijdslot of een andere dag.']);
-        haalBeschikbaarheid();     // de aantallen zijn verouderd
+        toonMelding('err', [err.message]);
       } else {
         toonMelding('err', [
           'We konden je aanvraag niet bij ons krijgen. Probeer het zo nog eens, of bel ons ' +
@@ -961,7 +878,6 @@
   bouwMenus();
   bouwSamenvatting();
   bouwContact();
-  haalBeschikbaarheid();
 
   /* ---------- badge in de hero ---------- */
   /* Boven de ondertitel, zodat het eerste wat je ziet de kerstactie is

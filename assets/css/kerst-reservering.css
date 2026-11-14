@@ -224,10 +224,7 @@
 .kerst-sam__totaal strong { font-family: var(--ff-display); font-size: 1.12rem; color: var(--kerst-rood-diep);
   font-variant-numeric: tabular-nums; }
 
-/* ---------- Instemming, voet, meldingen ---------- */
-.kerst-akkoord { display: grid; grid-template-columns: auto 1fr; gap: 9px; align-items: start;
-  font-size: .82rem; color: var(--ink-soft); line-height: 1.5; }
-.kerst-akkoord input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--kerst-rood); }
+/* ---------- Voet en meldingen ---------- */
 
 .kerst-voet { flex: none; padding: 13px 16px; background: #fff;
   border-top: 1px solid var(--line); display: grid; gap: 8px; }
@@ -344,20 +341,8 @@
   -webkit-mask-repeat: repeat-x; mask-repeat: repeat-x;
 }
 
-/* ---------- Beschikbaarheid ---------- */
-.kerst-vrij { font-size: .8rem; font-weight: 700; color: var(--kerst-rood); }
-.kerst-vrij--vol { color: var(--kerst-rood-diep); }
-.kerst-vrij:empty { display: none; }
-
-.kerst-shift__vrij { font-size: .74rem; font-weight: 700; color: var(--kerst-rood);
-  margin-left: auto; white-space: nowrap; }
-.kerst-shift__naam + .kerst-shift__vrij { margin-left: 10px; }
-.kerst-shift:disabled { opacity: .5; cursor: not-allowed; background: #F4F2EE; }
-.kerst-shift:disabled:hover { border-color: var(--line); }
-
 .kerst-menu-uitleg { margin: -4px 0 10px; font-size: .8rem; color: var(--ink-soft);
   line-height: 1.5; }
-.kerst-menu__links { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 5px; }
 
 /* ---------- Taalknop in de kop ---------- */
 .kerst-taal { display: flex; gap: 3px; margin-left: auto; flex: none;

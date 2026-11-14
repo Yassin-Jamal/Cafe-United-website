@@ -1,70 +1,24 @@
 /* ------------------------------------------------------------------
-   /api/reserve — kerstdiner
+   POST /api/reserve — kerstdiner-aanvraag
 
-   GET  → hoeveel plaatsen er per dag en per tijdslot nog vrij zijn
-   POST → een aanvraag vastleggen en twee mails sturen via Resend
+   Elke aanvraag gaat per mail naar de zaak, plus een ontvangstbevestiging
+   naar de gast. De zaak bevestigt zelf per mail; de site houdt geen
+   plaatsen bij en wijst niets af.
 
-   Mail gebruikt dezelfde omgevingsvariabelen als /api/send
+   Gebruikt dezelfde omgevingsvariabelen als /api/send
    (RESEND_API_KEY, MAIL_TO, MAIL_FROM).
-
-   Het tellen van bezette plaatsen heeft opslag nodig die een serverless
-   functie overleeft. Dat loopt via de REST-API van Vercel KV / Upstash
-   Redis; zie TELLER hieronder. Staan die variabelen er niet, dan kan de
-   site niet tellen: er wordt dan geen beschikbaarheid getoond en geen
-   aanvraag geweigerd (liever niets beloven dan iets onwaars beloven).
    ------------------------------------------------------------------ */
 
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
 
-/* Tijdsloten en capaciteit. Moet gelijk zijn aan KERST.shifts in
-   assets/js/kerst-reservering.js — de server rekent zelf na. */
+/* Datums en tijdsloten. Moet gelijk zijn aan KERST.datums en KERST.shifts
+   in assets/js/kerst-reservering.js — de server controleert zelf. */
 const DATUMS = ['2026-12-23', '2026-12-24', '2026-12-25', '2026-12-26', '2026-12-27'];
 const SHIFTS = [
-  { id: 'shift-1', label: '14:00 – 16:30', plaatsen: 30 },
-  { id: 'shift-2', label: '17:00 – 19:30', plaatsen: 30 },
-  { id: 'shift-3', label: '20:00 – 21:30', plaatsen: 30 }
+  { id: 'shift-1', label: '14:00 – 16:00' },
+  { id: 'shift-2', label: '17:00 – 19:00' },
+  { id: 'shift-3', label: '20:00 – 22:00' }
 ];
-
-/* Vercel KV zet KV_REST_API_*; een losse Upstash-database UPSTASH_REDIS_*.
-   Allebei dezelfde REST-API, dus allebei goed. */
-const KV_URL   = process.env.KV_REST_API_URL   || process.env.UPSTASH_REDIS_REST_URL   || '';
-const KV_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || '';
-const TELLER_AAN = !!(KV_URL && KV_TOKEN);
-
-const sleutel = (datum, shiftId) => `kerst:${datum}:${shiftId}`;
-
-async function kv(pad) {
-  const r = await fetch(`${KV_URL.replace(/\/$/, '')}/${pad}`, {
-    headers: { Authorization: `Bearer ${KV_TOKEN}` },
-    cache: 'no-store'
-  });
-  if (!r.ok) throw new Error('KV ' + r.status + ': ' + (await r.text()).slice(0, 200));
-  const data = await r.json();
-  return data.result;
-}
-
-/* Hoeveel plaatsen zijn er al vergeven, per tijdslot, voor één datum. */
-async function bezet(datum) {
-  const uit = {};
-  await Promise.all(SHIFTS.map(async (s) => {
-    const v = await kv(`get/${encodeURIComponent(sleutel(datum, s.id))}`);
-    uit[s.id] = Number(v) || 0;
-  }));
-  return uit;
-}
-
-/* Eerst ophogen, dan pas kijken of het paste: twee gasten die tegelijk
-   boeken zouden bij "eerst lezen, dan schrijven" allebei door een laatste
-   plaats heen glippen. Past het niet, dan draaien we het terug. */
-async function reserveer(datum, shiftId, aantal, max) {
-  const k = encodeURIComponent(sleutel(datum, shiftId));
-  const na = Number(await kv(`incrby/${k}/${aantal}`));
-  if (na > max) {
-    await kv(`decrby/${k}/${aantal}`);
-    return { ok: false, vrij: Math.max(0, max - (na - aantal)) };
-  }
-  return { ok: true, vrij: max - na };
-}
 
 const TO   = process.env.MAIL_TO   || 'cafeunitedrotterdam@gmail.com';
 const FROM = process.env.MAIL_FROM || 'Café United <forms@mail.permyron.com>';
@@ -121,7 +75,7 @@ function clean(v) {
 
 const isEmail = (v) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
 const isDatum = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v);
-/* Het tijdslot komt als tekst binnen ("17:00 – 19:30 (Vroege avond)"); we
+/* Het tijdslot komt als tekst binnen ("17:00 – 19:00 (Vroege avond)"); we
    eisen alleen dat er iets staat en knippen het af in clean(). */
 const isShift = (v) => v.length > 0;
 
@@ -153,44 +107,8 @@ async function stuur(payload) {
 }
 
 module.exports = async function handler(req, res) {
-  /* ---------- GET: beschikbaarheid ---------- */
-  if (req.method === 'GET') {
-    res.setHeader('Cache-Control', 'no-store');
-    if (!TELLER_AAN) {
-      /* Welke namen we zochten en wat er gevonden is — alleen namen, nooit
-         waarden. Zonder dit is "teller uit" niet te onderscheiden van
-         "teller kapot" en zoek je je blind in de instellingen. */
-      const gevonden = ['KV_REST_API_URL', 'KV_REST_API_TOKEN',
-                        'UPSTASH_REDIS_REST_URL', 'UPSTASH_REDIS_REST_TOKEN',
-                        'KV_URL', 'REDIS_URL']
-        .filter((n) => !!process.env[n]);
-      return res.status(200).json({
-        tellerAan: false, shifts: SHIFTS, vrij: null,
-        reden: 'geen REST-variabelen gevonden',
-        gevondenNamen: gevonden
-      });
-    }
-    try {
-      const vrij = {};
-      await Promise.all(DATUMS.map(async (d) => {
-        const b = await bezet(d);
-        vrij[d] = {};
-        SHIFTS.forEach((s) => { vrij[d][s.id] = Math.max(0, s.plaatsen - b[s.id]); });
-      }));
-      return res.status(200).json({ tellerAan: true, shifts: SHIFTS, vrij });
-    } catch (err) {
-      console.error('Beschikbaarheid ophalen mislukt:', err.message);
-      return res.status(200).json({
-        tellerAan: false, shifts: SHIFTS, vrij: null,
-        reden: 'verbinding met de teller mislukt',
-        /* Geen token in de melding: alleen de status of het type fout. */
-        fout: String(err.message).replace(/https?:\/\/[^\s]+/g, '[url]').slice(0, 120)
-      });
-    }
-  }
-
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'GET, POST');
+    res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
@@ -243,35 +161,13 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Controleer: ' + fouten.join(', ') + '.' });
   }
 
-  /* ---------- plaatsen vastleggen ---------- */
-  /* Het tijdslot uit de browser mag niet bepalen hoeveel er past; we zoeken
-     het slot op in onze eigen lijst en gebruiken díé capaciteit. */
+  /* Datum en tijdslot tegen onze eigen lijst leggen: wat de browser stuurt
+     is niet te vertrouwen. */
   const shiftId = clean(body.shiftId);
   const slot = SHIFTS.filter((s) => s.id === shiftId)[0];
   if (!slot) return res.status(400).json({ error: 'Onbekend tijdslot.' });
   if (DATUMS.indexOf(datum) === -1) {
     return res.status(400).json({ error: 'Deze datum valt buiten het kerstdiner.' });
-  }
-
-  let geboekt = false;
-  if (TELLER_AAN) {
-    try {
-      const uitslag = await reserveer(datum, slot.id, personen, slot.plaatsen);
-      if (!uitslag.ok) {
-        return res.status(409).json({
-          error: uitslag.vrij === 0
-            ? 'Dit tijdslot is helaas vol.'
-            : 'Er zijn nog maar ' + uitslag.vrij + ' plaatsen vrij in dit tijdslot.',
-          vrij: uitslag.vrij
-        });
-      }
-      geboekt = true;
-    } catch (err) {
-      /* Teller onbereikbaar: de aanvraag toch doorlaten en mailen, want een
-         gast weigeren om een storing aan onze kant is erger dan een telling
-         die even niet klopt. Het team ziet de waarschuwing in de mail. */
-      console.error('Plaatsen vastleggen mislukt:', err.message);
-    }
   }
 
   const datumNet = clean(body.datumTekst) || datum;
@@ -301,14 +197,6 @@ module.exports = async function handler(req, res) {
   if (kinderen > 0 && prijsKind != null) rijen.push(['Per kind', euro(prijsKind)]);
   rijen.push(['Totaal', totaalTxt]);
   if (opmerking) rijen.push(['Opmerking', opmerking]);
-  /* Capaciteit meesturen zodat het team zelf kan tellen — de site houdt
-     niet bij hoeveel plaatsen er al vergeven zijn. */
-  rijen.push(['Plaatsen in dit slot', String(slot.plaatsen)]);
-  if (!TELLER_AAN) {
-    rijen.push(['LET OP', 'de site telt niet mee — capaciteit niet bewaakt']);
-  } else if (!geboekt) {
-    rijen.push(['LET OP', 'teller was onbereikbaar — deze plaatsen zijn niet afgeboekt']);
-  }
 
   const naarZaakText = ['Nieuwe kerstdiner-aanvraag via de website', '']
     .concat(rijen.map((r) => r[0] + ': ' + r[1])).join('\n');
@@ -364,24 +252,13 @@ module.exports = async function handler(req, res) {
     await stuur({
       from: FROM,
       to: [TO],
-      subject: `Nieuwe kerstdiner-reservering – ${naam}`,
+      subject: `Nieuwe kerstdiner-aanvraag – ${naam}`,
       text: naarZaakText,
       html: naarZaakHtml,
       reply_to: email
     });
   } catch (err) {
     console.error('Mail naar de zaak mislukt:', err.message);
-    /* De plaatsen weer vrijgeven: de zaak heeft de aanvraag niet gekregen,
-       dus die stoelen zijn niet echt bezet. Zonder dit lopen de tijdsloten
-       vol met reserveringen die niemand ooit gezien heeft. */
-    if (geboekt) {
-      try {
-        await kv(`decrby/${encodeURIComponent(sleutel(datum, slot.id))}/${personen}`);
-      } catch (e2) {
-        console.error('Plaatsen teruggeven mislukt — telling staat ' + personen +
-                      ' te hoog op ' + datum + ' ' + slot.id + ':', e2.message);
-      }
-    }
     return res.status(502).json({ error: 'De aanvraag kon niet worden verstuurd.' });
   }
 
