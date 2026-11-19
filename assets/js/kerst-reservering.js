@@ -385,7 +385,9 @@
     inpK.min = 0; inpK.max = KERST.personen.max; inpK.value = staat.kinderen;
     inpK.inputMode = 'numeric';
     vK.appendChild(inpK);
-    vK.appendChild(el('span', 'kerst-hint', 'Kindertarief'));
+    /* De leeftijdsgrens hoort bij het veld zelf te staan, anders weet een
+       gast niet wie er als kind telt. */
+    vK.appendChild(el('span', 'kerst-hint', 'Kindertarief t/m 12 jaar'));
 
     rij2.appendChild(vP); rij2.appendChild(vK);
 
